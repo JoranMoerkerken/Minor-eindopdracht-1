@@ -7,11 +7,13 @@ from Transaction import Tx
 timing_variable = 20
 
 class TxBlock (CBlock):
+    validatedBy= None
     
     # TODO 1: Initialize the block
     # Each block contains a list for the data and a hash value to previous block
     def __init__(self, previousBlock):
         super(TxBlock, self).__init__([], previousBlock)
+        self.validatedBy = []
     
     # TODO 2: Append the transaction to the data list
     def addTx(self, Tx_in):

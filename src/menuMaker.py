@@ -1,7 +1,7 @@
 import os
 from pynput import keyboard
 
-def select_menu_option(menu_options):
+def select_menu_option(header, menu_options):
     current_option = 0
     stop_listener = False
 
@@ -10,6 +10,8 @@ def select_menu_option(menu_options):
 
     def display_menu():
         clear_screen()
+        if header is not None:
+            print(header)
         for idx, option in enumerate(menu_options):
             if idx == current_option:
                 print("->", option)

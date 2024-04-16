@@ -16,3 +16,17 @@ def fetch_user_data(username, password_hash, db_path="../data/user_database.db")
     conn.close()
 
     return user_data
+
+def fetch_user_by_public_key(public_key, db_path="../data/user_database.db"):
+    """
+    Retrieve user data from the database based on the public key.
+    """
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM users WHERE public_key=?", (public_key,))
+    user_data = c.fetchone()
+
+    conn.close()
+
+    return user_data

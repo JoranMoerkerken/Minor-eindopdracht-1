@@ -1,4 +1,4 @@
-import menuMaker, Program
+import menuMaker, GoodChain
 
 def transfer_coin():
     print("transfer coin has been selected")
@@ -18,11 +18,10 @@ def logout():
     print("Logout")
 
 
-def UserMenu():
+def UserMenu(user):
     options = ["Transfer coins", "Explore the blockchain", "Check the pool", "Cancel a transaction", "Mine a block", "logout"]
     actions = [transfer_coin, explore_blockchain,check_pool ,cancel_transaction, mine_block,logout ]
 
-    index = MenuMaker.select_menu_option(options)
-    print("chosen index is ", index)
+    index = menuMaker.select_menu_option(f"welcome to Goodchain {user.username}!", options)
     if index < len(actions):
         actions[index]()

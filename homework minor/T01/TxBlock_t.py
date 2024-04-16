@@ -3,6 +3,7 @@ from Signature import *
 from Transaction import *
 from TxBlock import *
 import pickle
+import TransactionPool
 from cryptography.hazmat.primitives import serialization
 
 Leading_Zero = 2
@@ -13,6 +14,7 @@ if __name__ == "__main__":
     rose_prv, rose_pbc = generate_keys()
     mara_prv, mara_pbc = generate_keys()
 
+    print(alex_prv)
     # create few valid transactions and valid blocks
     Tx1 = Tx()
     Tx1.add_input(alex_pbc, 6)
@@ -80,4 +82,58 @@ if __name__ == "__main__":
             print("Error! Block is valid")
         else:
             print("Success! Block is invalid")
+
+    if __name__ == "__main__":
+        # ... (your existing code)
+
+        # Create a TransactionPool instance
+        tx_pool = TransactionPool.TransactionPool()
+
+        # Add transactions to the pool
+        tx_pool.add_transaction(Tx1)
+        tx_pool.add_transaction(Tx2)
+        tx_pool.add_transaction(Tx3)
+        tx_pool.add_transaction(Tx4)
+
+        # Remove a transaction from the pool
+        tx_pool.remove_transaction(Tx1)
+
+        # Get the transactions from the pool
+        transactions = tx_pool.get_transactions()
+        print("Transactions in the pool:")
+        for tx in transactions:
+            print(tx)
+
+        # Clear the transaction pool
+        tx_pool.clear_transactions()
+
+        tx_pool.add_transaction(Tx1)
+        tx_pool.add_transaction(Tx2)
+        tx_pool.add_transaction(Tx3)
+        tx_pool.add_transaction(Tx4)
+        tx_pool.add_transaction(Tx6)
+
+        # Get the balance of a person using their public key
+        alex_balance = tx_pool.get_balance(alex_pbc)
+        print(f"Alex's balance: {alex_balance}")
+
+        rose_balance = tx_pool.get_balance(rose_pbc)
+        print(f"Rose's balance: {rose_balance}")
+
+        mike_balance = tx_pool.get_balance(mike_pbc)
+        print(f"Mike's balance: {mike_balance}")
+
+        # Clear the transaction pool
+        tx_pool.clear_transactions()
+
+        # Add transactions to the pool
+        tx_pool.add_transaction(Tx1)
+        tx_pool.add_transaction(Tx2)
+        tx_pool.add_transaction(Tx3)
+        tx_pool.add_transaction(Tx4)
+        tx_pool.add_transaction(Tx6)
+
+        # Print the transactions in the pool
+        tx_pool.print_transactions()
+
     

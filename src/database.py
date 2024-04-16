@@ -1,5 +1,9 @@
 import sqlite3
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+
+
 # the goal of this file is to place all read functions inside it,
 # as these have a high chance of being used again and aren't specific as a read/write function is.
 
@@ -17,16 +21,15 @@ def fetch_user_data(username, password_hash, db_path="../data/user_database.db")
 
     return user_data
 
-def fetch_user_by_public_key(public_key, db_path="../data/user_database.db"):
-    """
-    Retrieve user data from the database based on the public key.
-    """
+def get_username( public_key):
+    db_path = "../data/user_database.db"
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-
-    c.execute("SELECT * FROM users WHERE public_key=?", (public_key,))
-    user_data = c.fetchone()
-
+    c.execute("SELECT username FROM users WHERE public_key=?", (public_key,))
+    result = c.fetchone()
     conn.close()
+    return result[0] if result else "Unknown"
 
-    return user_data
+
+
+

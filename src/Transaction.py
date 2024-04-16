@@ -16,9 +16,6 @@ Notes:
     * Check previous tutorials for more information on this topic
 """
 
-REWARD_VALUE = 50.0
-NORMAL = 0
-REWARD = 1
 
 from Signature import *
 
@@ -27,7 +24,7 @@ class Tx:
     outputs =None
     sigs = None
     reqd = None
-    def __init__(self, type = NORMAL):
+    def __init__(self, type = "NORMAL"):
         self.type = type
         self.inputs = []
         self.outputs = []

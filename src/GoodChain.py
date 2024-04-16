@@ -8,6 +8,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 import hashlib  # Add this line for SHA256 hashing
 
+import Transaction, TransactionPool
+
 
 # Function to generate keys
 def generate_keys():
@@ -96,6 +98,9 @@ def explore_blockchain():
 def exit_program():
     print("Exiting...")
 
+from cryptography.hazmat.primitives import serialization
+
+from cryptography.hazmat.primitives import serialization
 
 def public_menu():
     options = ["Login", "Explore the blockchain", "Sign up", "Exit"]
@@ -107,4 +112,5 @@ def public_menu():
 
 
 if __name__ == "__main__":
-    public_menu()
+    # public_menu()
+    test_transaction_pool()

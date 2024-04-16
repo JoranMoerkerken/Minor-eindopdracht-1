@@ -18,10 +18,11 @@ Notes:
 
 
 from Signature import *
-
+types = ['NORMAL', 'REWARD','MINEREWARD']
 class Tx:
     inputs = None
     outputs =None
+    fee=None
     sigs = None
     reqd = None
     def __init__(self, type = "NORMAL"):
@@ -30,6 +31,7 @@ class Tx:
         self.outputs = []
         self.sigs = []
         self.reqd = []
+        self.fee = 0
 
     def add_input(self, from_addr, amount):
         self.inputs.append((from_addr, amount))

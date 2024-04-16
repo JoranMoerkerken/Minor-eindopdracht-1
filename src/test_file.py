@@ -52,11 +52,6 @@ if __name__ == "__main__":
     Tx2.add_output(mara_pbc, 2.1)
     Tx2.sign(rose_prv)
 
-    genesis_block = TxBlock(None)
-    genesis_block.addTx(Tx1)
-    genesis_block.addTx(Tx2)
-    genesis_block.mine(Leading_Zero)
-
     Tx3 = Tx()
     Tx3.add_input(mara_pbc, 2.1)
     Tx3.add_input(rose_pbc, 1.4)

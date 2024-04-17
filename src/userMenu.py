@@ -8,9 +8,22 @@ def transfer_coin():
 def explore_blockchain():
     print("Explore the blockchain has been selected")
 
+
+import os
+import sqlite3
+import hashlib
+from cryptography.hazmat.primitives import serialization
+
+
+import os
+import sqlite3
+import hashlib
+from cryptography.hazmat.primitives import serialization
+
 def search_user(logged_in_user):
-    print(f"greetings {logged_in_user.username}. Inside this function you can search for other members their public key!\n"
-          f"You can also search your own name and look up your own public and private key!")
+    print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"
+          f"You can also search your own name and look up your own public and private keys!")
+
     search_username = input("Enter the username to search for: ")
 
     db_path = "../data/user_database.db"
@@ -30,27 +43,32 @@ def search_user(logged_in_user):
         conn.close()
         return
 
-    user_id, found_username, password_hash, private_key_str, public_key = user
+    user_id, found_username, password_hash, private_key_str, public_key_pem = user
+
+    # Deserialize public key
+    public_key = serialization.load_pem_public_key(public_key_pem.encode())
 
     # If the found user is the logged-in user
     if found_username == logged_in_user.username:
         password = input("Please enter your password to view your private key: ")
 
         # Verify password
-        if hashlib.sha256(password.encode()).hexdigest() != password_hash:
+        if not GoodChain.verify_password(logged_in_user.publicKey, password, password_hash):
             print("Incorrect password.")
             conn.close()
             return
 
         print(f"Username: {found_username}")
-        print(f"Public Key: {public_key}")
-        print(f"Private Key: {private_key_str}")
+        print(f"Public Key:\n {public_key_pem}")
+        print(f"Private Key:\n {private_key_str}")
 
     else:
         print(f"Username: {found_username}")
-        print(f"Public Key: {public_key}")
+        print(f"Public Key: \n{public_key_pem}")
 
     conn.close()
+
+
 
 def check_pool():
     print("Check the pool has been selected")

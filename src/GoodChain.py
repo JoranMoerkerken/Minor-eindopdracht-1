@@ -39,8 +39,14 @@ def sign_password(private_key, password):
 
     return signature
 
-def verify_password(public_key, password, signature):
+def verify_password(public_key_pem, password, signature):
+    # Load the PEM-formatted public key string to an RSAPublicKey object
+    public_key = serialization.load_pem_public_key(
+        public_key_pem.encode(),
+    )
+
     try:
+        # Verify the signature
         public_key.verify(
             signature,
             password.encode(),

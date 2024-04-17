@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -11,6 +12,9 @@ def fetch_user_data(username, db_path="../data/user_database.db"):
     """
     Retrieve user data from the database.
     """
+    if not os.path.exists("../data"):
+        return
+
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
@@ -19,8 +23,26 @@ def fetch_user_data(username, db_path="../data/user_database.db"):
 
     conn.close()
 
-    return user_data
+    if user_data:
+        user_data_list = list(user_data)
 
+        # Deserialize private key
+        private_key = serialization.load_pem_private_key(
+            user_data[3].encode(), password=None, backend=default_backend()
+        )
+        user_data_list[3] = private_key
+
+        # Deserialize public key
+        public_key = serialization.load_pem_public_key(
+            user_data[4].encode(), backend=default_backend()
+        )
+        user_data_list[4] = public_key
+
+        print(user_data_list)
+
+        return user_data_list
+    else:
+        return None
 
 def get_username(public_key):
     db_path = "../data/user_database.db"

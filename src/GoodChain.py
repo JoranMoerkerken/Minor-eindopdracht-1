@@ -64,10 +64,6 @@ def sign_up():
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-
-    # Sign the password
-    signature = sign_password(private_key, password)
-
     # Hash the password using the private key
     hashed_password = private_key.sign(
         password.encode(),
@@ -107,51 +103,21 @@ def sign_up():
     conn.close()
 
     print("Sign up successful.")
-    userMenu.UserMenu(User.User(username, hashed_password, private_key_str.decode(), public_key.decode()))
+    userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
 
 def login():
     username = input("Enter your username: ")
     password = input("Enter your password: ")
 
-    # Connect to the SQLite database
-    db_path = "../data/user_database.db"
-    if not os.path.exists("../data"):
-        print("No users registered yet. Please sign up first.")
-        return
-
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-
-    # Fetch user data from the database
-    c.execute("SELECT * FROM users WHERE username=?", (username,))
-    user_data = c.fetchone()
-
-    if not user_data:
-        print("Incorrect username or password. Please try again.")
-        conn.close()
-        return
-
-    # Extract data from the fetched row
-    _, username, password_db, private_key, public_key = user_data
-
-    private_key = serialization.load_pem_private_key(
-        private_key.encode(), password= None
-    )
-    # Deserialize public key
-    public_key = serialization.load_pem_public_key(
-        public_key.encode()
-    )
+    user_data = database.fetch_user_data(username)
     # Verify the password using the public key
-    if not verify_password(public_key, password, password_db):
+    if not verify_password(user_data[4], password, user_data[2]):
         print("Incorrect username or password. Please try again.")
-        conn.close()
         return
 
     print("Login successful.")
-    userMenu.UserMenu(User.User(username, password_db, private_key, public_key))
+    userMenu.UserMenu(User.User(user_data[1], user_data[2], user_data[3], user_data[4]))
 
-    # Close database connection
-    conn.close()
 
 def explore_blockchain():
     input()
@@ -169,5 +135,5 @@ def public_menu():
         actions[index]()
 
 if __name__ == "__main__":
-    test_file.test_transaction_pool()
-    # public_menu()
+    # test_file.test_transaction_pool()
+    public_menu()

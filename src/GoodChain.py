@@ -15,6 +15,7 @@ import userMenu
 import database
 import Transaction
 import TransactionPool
+import test_file
 
 def generate_keys():
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -133,8 +134,8 @@ def login():
     # Extract data from the fetched row
     _, username, password_db, private_key, public_key = user_data
 
-    private_key = serialization.load_pem_public_key(
-        public_key.encode()
+    private_key = serialization.load_pem_private_key(
+        private_key.encode(), password= None
     )
     # Deserialize public key
     public_key = serialization.load_pem_public_key(
@@ -168,4 +169,5 @@ def public_menu():
         actions[index]()
 
 if __name__ == "__main__":
-    public_menu()
+    test_file.test_transaction_pool()
+    # public_menu()

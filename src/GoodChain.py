@@ -5,8 +5,9 @@ import database
 import sqlite3
 import os
 from cryptography.hazmat.primitives.asymmetric import rsa
+import hashlib
 from cryptography.hazmat.primitives import serialization
-import hashlib  # Add this line for SHA256 hashing
+import test_file
 
 import Transaction, TransactionPool
 
@@ -84,8 +85,6 @@ def login():
         print("Incorrect username or password.")
         return
 
-    print("Login successful.")
-    print(user_data)
     userMenu.UserMenu(User.User(user_data[1],user_data[2],user_data[3],user_data[4]))
     # Call the UserMenu function here if it's defined elsewhere
 
@@ -98,10 +97,6 @@ def explore_blockchain():
 def exit_program():
     print("Exiting...")
 
-from cryptography.hazmat.primitives import serialization
-
-from cryptography.hazmat.primitives import serialization
-
 def public_menu():
     options = ["Login", "Explore the blockchain", "Sign up", "Exit"]
     actions = [login, explore_blockchain, sign_up, exit_program]  # Define your action functions here
@@ -112,5 +107,5 @@ def public_menu():
 
 
 if __name__ == "__main__":
-    # public_menu()
-    test_transaction_pool()
+    public_menu()
+    # test_file.test_transaction_pool()

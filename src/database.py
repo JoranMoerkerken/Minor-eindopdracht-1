@@ -7,19 +7,20 @@ from cryptography.hazmat.primitives import serialization
 # the goal of this file is to place all read functions inside it,
 # as these have a high chance of being used again and aren't specific as a read/write function is.
 
-def fetch_user_data(username, password_hash, db_path="../data/user_database.db"):
+def fetch_user_data(username, db_path="../data/user_database.db"):
     """
     Retrieve user data from the database.
     """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password_hash))
+    c.execute("SELECT * FROM users WHERE username=?", (username,))
     user_data = c.fetchone()
 
     conn.close()
 
     return user_data
+
 
 def get_username( public_key):
     db_path = "../data/user_database.db"

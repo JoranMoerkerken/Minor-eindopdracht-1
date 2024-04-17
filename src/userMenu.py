@@ -1,24 +1,12 @@
 import menuMaker, GoodChain
-import sqlite3
 import os
-import hashlib
+import sqlite3
+from cryptography.hazmat.primitives import serialization
 
 def transfer_coin():
     print("transfer coin has been selected")
 def explore_blockchain():
     print("Explore the blockchain has been selected")
-
-
-import os
-import sqlite3
-import hashlib
-from cryptography.hazmat.primitives import serialization
-
-
-import os
-import sqlite3
-import hashlib
-from cryptography.hazmat.primitives import serialization
 
 def search_user(logged_in_user):
     print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"

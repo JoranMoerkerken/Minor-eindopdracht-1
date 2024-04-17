@@ -49,8 +49,8 @@ class TransactionPool:
         """
         Save the current transaction pool to a .dat file.
         """
-        with open("../data/TransactionPool.dat", "wb") as file:
-            pickle.dump(self.transactions, file)
+        # with open("../data/TransactionPool.dat", "wb") as file:
+        #     pickle.dump(self.transactions, file)
 
     def load_from_file(self):
         """

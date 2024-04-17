@@ -48,8 +48,7 @@ class Tx:
         self.sigs.append(newsig)
                
     def is_valid(self):
-        
-        if self.type == REWARD:
+        if self.type == "REWARD" or self.type == "MINEREWARD":
             if len(self.inputs)!=0 and len(self.outputs)!=1:
                 return False
             return True

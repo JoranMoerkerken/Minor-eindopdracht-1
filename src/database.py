@@ -22,14 +22,23 @@ def fetch_user_data(username, db_path="../data/user_database.db"):
     return user_data
 
 
-def get_username( public_key):
+def get_username(public_key):
     db_path = "../data/user_database.db"
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute("SELECT username FROM users WHERE public_key=?", (public_key,))
+
+    # Convert RSAPublicKey object to bytes and then to a string
+    public_key_str = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    ).decode('utf-8')
+
+    c.execute("SELECT username FROM users WHERE public_key=?", (public_key_str,))
     result = c.fetchone()
     conn.close()
+
     return result[0] if result else "Unknown"
+
 
 
 

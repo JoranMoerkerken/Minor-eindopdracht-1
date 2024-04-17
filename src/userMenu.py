@@ -1,7 +1,6 @@
 import menuMaker, GoodChain
 import os
 import sqlite3
-from cryptography.hazmat.primitives import serialization
 
 def transfer_coin():
     print("transfer coin has been selected")
@@ -33,10 +32,6 @@ def search_user(logged_in_user):
 
     user_id, found_username, password_hash, private_key_str, public_key_pem = user
 
-    # Deserialize public key
-    public_key = serialization.load_pem_public_key(public_key_pem.encode())
-
-    # If the found user is the logged-in user
     if found_username == logged_in_user.username:
         password = input("Please enter your password to view your private key: ")
 
@@ -55,8 +50,6 @@ def search_user(logged_in_user):
         print(f"Public Key: \n{public_key_pem}")
 
     conn.close()
-
-
 
 def check_pool():
     print("Check the pool has been selected")

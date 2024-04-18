@@ -142,7 +142,7 @@ def exit_program():
 
 def onStartUp():
     print("Starting up...")
-
+    #alle files hashen en checken of het overeenkomt met wat er in de files staat met behulp van hashing
 def public_menu():
     options = ["Login", "Sign up", "Explore the blockchain", "Exit"]
     actions = [login, sign_up, explore_blockchain, exit_program]  # Define your action functions here
@@ -154,3 +154,8 @@ def public_menu():
 if __name__ == "__main__":
     # test_file.test_transaction_pool()
     public_menu()
+
+# een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd
+# aantal blokken in de blockchain en aantal transactions in de pool
+# aangeven of een transactie gelukt is
+# een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid

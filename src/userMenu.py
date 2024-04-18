@@ -7,6 +7,9 @@ def transfer_coin():
 def explore_blockchain():
     print("Explore the blockchain has been selected")
 
+def explore_transactions():
+    print("Explore")
+
 def search_user(logged_in_user):
     print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"
           f"You can also search your own name and look up your own public and private keys!")
@@ -63,10 +66,15 @@ def mine_block():
 def logout():
     print("Logout")
 
+def newBlocks(user):
+    print("New Blocks")
+
 
 def UserMenu(user):
     options = ["Transfer coins", "Explore the blockchain","Search users", "Check the pool", "Cancel a transaction", "Mine a block", "logout"]
     actions = [transfer_coin, explore_blockchain,search_user, check_pool ,cancel_transaction, mine_block,logout ]
+
+    newBlocks(user)
 
     index = menuMaker.select_menu_option(f"welcome to Goodchain {user.username}!", options)
     if index < len(actions):

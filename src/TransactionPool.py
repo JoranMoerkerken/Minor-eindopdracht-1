@@ -103,4 +103,17 @@ class TransactionPool:
                     balance += amount
         return balance
 
+    def start_up(self):
+        """
+        Verify all transactions in the transaction pool.
+        Remove any transactions that fail verification.
+        """
+        valid_transactions = []
+
+        for tx in self.transactions:
+            if tx.verify():
+                valid_transactions.append(tx)
+
+        self.transactions = valid_transactions
+        self.save_to_file()
 

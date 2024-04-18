@@ -159,3 +159,7 @@ if __name__ == "__main__":
 # aantal blokken in de blockchain en aantal transactions in de pool
 # aangeven of een transactie gelukt is
 # een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid
+
+# moet het minen nog fixxen
+# select transactions moet ook min 5 en max 10 en ze pakken gebaseerd op type
+# zodra er is gemined moet er ook een minereward transactie aan worden gemaakt door de miner zelf

@@ -1,6 +1,9 @@
 import menuMaker, GoodChain
 import os
 import sqlite3
+import Transaction
+import TransactionPool
+import Blockchain
 
 def transfer_coin():
     print("transfer coin has been selected")
@@ -67,16 +70,48 @@ def logout():
     print("Logout")
 
 def newBlocks(user):
-    print("New Blocks")
+    blockchain = Blockchain.Blockchain()
+    newBlocks = 0
+    for i in range(1, len(blockchain.chain)):
+        current_block = blockchain.chain[i]
+        previous_block = blockchain.chain[i - 1]
+
+        if current_block.hash != current_block.calculate_hash():
+            return False, newBlocks
+
+        if current_block.previous_hash != previous_block.hash:
+            return False, newBlocks
+
+        # Check if the user is already in the validated_By list
+        if user not in current_block.validated_By:
+            current_block.validated_By.append(user)
+            newBlocks += 1
+
+    return True, newBlocks
 
 
 def UserMenu(user):
     options = ["Transfer coins", "Explore the blockchain","Search users", "Check the pool", "Cancel a transaction", "Mine a block", "logout"]
     actions = [transfer_coin, explore_blockchain,search_user, check_pool ,cancel_transaction, mine_block,logout ]
 
-    newBlocks(user)
+    is_valid, new_blocks_count = newBlocks(user)
 
-    index = menuMaker.select_menu_option(f"welcome to Goodchain {user.username}!", options)
+    if not is_valid:
+        print("Blockchain validation failed.")
+        return False
+
+    message = (
+        f"Welcome to Goodchain {user.username}!\n\n"
+        f"your confirmed balance =\n"
+        f"your pending balance = \n"
+        f"your actual balance = \n\n"
+        f"Amount of new blocks since your last login!\n\n"
+        f"Current amount of transactions in pool is: {len(TransactionPool.TransactionPool().get_transactions())}\n"
+        f"Current amount of blocks in the chain is: {len(Blockchain.Blockchain().chain)}"
+    )
+
+    index = menuMaker.select_menu_option(message, options)
+
     if index < len(actions):
         if index == 2:
             actions[index](user)

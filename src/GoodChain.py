@@ -155,8 +155,10 @@ if __name__ == "__main__":
     # test_file.test_transaction_pool()
     public_menu()
 
-# een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd
-# aantal blokken in de blockchain en aantal transactions in de pool
+# een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd.
+# doe dit met confirmed balance vanuit de blockchain/ pending vanuit nog niet valid blokken en de pool / en dan actual is confirmed - pending
+#
+# aantal blokken in de blockchain en aantal transactions in de pool tonen aan de user
 # aangeven of een transactie gelukt is
 # een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid en de user moet hierover geinformeerd worden
 # een creator van een blok mag het blok zelf niet valideren

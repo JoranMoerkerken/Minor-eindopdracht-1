@@ -158,7 +158,8 @@ if __name__ == "__main__":
 # een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd
 # aantal blokken in de blockchain en aantal transactions in de pool
 # aangeven of een transactie gelukt is
-# een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid
+# een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid en de user moet hierover geinformeerd worden
+# een creator van een blok mag het blok zelf niet valideren
 
 # moet het minen nog fixxen
 # select transactions moet ook min 5 en max 10 en ze pakken gebaseerd op type

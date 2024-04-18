@@ -18,7 +18,7 @@ def test_blockchain():
         tx_pool = TransactionPool.TransactionPool()
 
         # Create transactions from user1 to user2
-        for _ in range(5):
+        for _ in range(3):
             tx = Transaction.Tx()
             tx.add_input(user1['public_key'], 10)
             tx.add_output(user2['public_key'], 10)
@@ -26,15 +26,11 @@ def test_blockchain():
             tx_pool.add_transaction(tx)
 
         # Mine a block
-        transactions = blockchain.select_transactions(user1['public_key'], 4)
+        tx_pool.print_transactions()
+        transactions = blockchain.select_transactions()
+        tx_pool.load_from_file()
         blockchain.mine_block(transactions)
-
-        # Check user balances
-        balance_user1 = blockchain.calculate_balance(user1['public_key'])
-        balance_user2 = blockchain.calculate_balance(user2['public_key'])
-
-        print(f"Balance of {user1['username']}: {balance_user1}")
-        print(f"Balance of {user2['username']}: {balance_user2}")
+        tx_pool.print_transactions()
 
         # Verify block validation
         if blockchain.is_valid():
@@ -43,7 +39,7 @@ def test_blockchain():
             print("Blockchain is not valid.")
 
         # Create more transactions and mine another block
-        for _ in range(5):
+        for _ in range(3):
             tx = Transaction.Tx()
             tx.add_input(user2['public_key'], 5)
             tx.add_output(user1['public_key'], 5)
@@ -51,21 +47,20 @@ def test_blockchain():
             tx_pool.add_transaction(tx)
 
         # Mine another block
-        transactions = blockchain.select_transactions(user2['public_key'], 4)
+        tx_pool.print_transactions()
+        transactions = blockchain.select_transactions()
+        tx_pool.load_from_file()
         blockchain.mine_block(transactions)
-
-        # Check user balances again
-        balance_user1 = blockchain.calculate_balance(user1['public_key'])
-        balance_user2 = blockchain.calculate_balance(user2['public_key'])
-
-        print(f"Updated balance of {user1['username']}: {balance_user1}")
-        print(f"Updated balance of {user2['username']}: {balance_user2}")
+        tx_pool.print_transactions()
 
         # Verify block validation again
         if blockchain.is_valid():
             print("Blockchain is valid.")
         else:
             print("Blockchain is not valid.")
+
+
+        blockchain.print_blockchain()
 
     else:
         print("Not enough users to create transactions.")

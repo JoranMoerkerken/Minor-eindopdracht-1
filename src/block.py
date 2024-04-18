@@ -10,6 +10,7 @@ class Block:
         self.previous_hash = previous_hash
         self.nonce = 0
         self.hash = self.calculate_hash()
+        self.validated_By = []
 
     def calculate_hash(self):
         block_string = f"{self.timestamp}{self.transactions}{self.previous_hash}".encode()

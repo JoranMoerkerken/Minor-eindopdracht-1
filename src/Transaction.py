@@ -1,12 +1,14 @@
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 import database
+from datetime import datetime
 
 class Tx:
-    def __init__(self):
+    def __init__(self, type='transaction'):
         self.inputs = []
         self.outputs = []
-        self.type = 'transaction'
+        self.type = type
+        self.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def add_input(self, from_address, amount):
         """
@@ -17,6 +19,11 @@ class Tx:
         - amount (float): Amount to be sent.
         """
         self.inputs.append((from_address, amount))
+
+    def set_type(self, type):
+        if type != 'reward' or type != 'minereward':
+            return False
+        self.type = type
 
     def add_output(self, to_address, amount):
         """
@@ -53,6 +60,8 @@ class Tx:
         Returns:
         - bool: True if the signature is valid, False otherwise.
         """
+        if self.type == 'reward' or self.type == 'minereward':
+            return True
         message = self.__gather_message()
         public_key = serialization.load_pem_public_key(
             self.inputs[0][0].encode()

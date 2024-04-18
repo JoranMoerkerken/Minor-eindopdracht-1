@@ -85,7 +85,7 @@ def search_user(logged_in_user):
     UserMenu(user)
 
 def check_pool(user):
-    TransactionPool.TransactionPool().explore_transactions(user)
+    TransactionPool.TransactionPool().print_transactions()
     UserMenu(user)
 
 def cancel_transaction(user):

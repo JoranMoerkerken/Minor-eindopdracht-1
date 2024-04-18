@@ -9,12 +9,34 @@ import database
 def transfer_coin(user):
     print("transfer coin has been selected")
 def explore_blockchain(user):
-    Blockchain.Blockchain().explore_blockchain()
+    Blockchain.Blockchain().print_blockchain()
     UserMenu(user)
 
 def explore_transactions(user):
-    TransactionPool.TransactionPool().explore_transactions(user)
+    # Retrieve transactions related to the specified user from the transaction pool
+    transaction_pool = TransactionPool.TransactionPool()
+    user_transactions = [tx for tx in transaction_pool.get_transactions() if tx.inputs and tx.inputs[0][0] == user.publicKey]
+
+    if not user_transactions:
+        print("No transactions found for the user.")
+        UserMenu(user)
+        return
+
+    # Display user's active transactions
+    transaction_list = []
+    for i, tx in enumerate(user_transactions):
+        sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
+        receiver = database.get_username(tx.outputs[0][0])
+        amount = tx.outputs[0][1] if tx.outputs else 50
+        transaction_str = f"{i + 1}. {amount} to {receiver}"
+        transaction_list.append(transaction_str)
+
+    # Join transaction strings into a single list
+    transaction_output = "\n".join(transaction_list)
+    print(transaction_output)
+    input("Press Enter to continue...")
     UserMenu(user)
+
 
 def search_user(logged_in_user):
     print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"
@@ -59,9 +81,12 @@ def search_user(logged_in_user):
         print(f"Public Key: \n{public_key_pem}")
 
     conn.close()
+    input("Press Enter to continue...")
+    UserMenu(user)
 
 def check_pool(user):
-    print("Check the pool has been selected")
+    TransactionPool.TransactionPool().explore_transactions(user)
+    UserMenu(user)
 
 def cancel_transaction(user):
     print(f"Greetings {user.username}. Inside this function, you can cancel your own transactions!")
@@ -126,8 +151,8 @@ def newBlocks(user):
 
 def UserMenu(user):
 
-    options = ["Transfer coins", "Explore the blockchain","Search users", "Check the pool", "Cancel a transaction", "Mine a block", "logout"]
-    actions = [transfer_coin, explore_blockchain,search_user, check_pool ,cancel_transaction, mine_block,logout ]
+    options = ["Transfer coins", "Explore the blockchain","Explore pending transactions", "Search users", "Check the pool", "Cancel a pending transaction", "Mine a block", "logout"]
+    actions = [transfer_coin, explore_blockchain,explore_transactions, search_user, check_pool ,cancel_transaction, mine_block,logout ]
 
     is_valid, new_blocks_count = newBlocks(user)
 
@@ -140,7 +165,7 @@ def UserMenu(user):
         f"your confirmed balance =\n"
         f"your pending balance = \n"
         f"your actual balance = \n\n"
-        f"Amount of new blocks since your last login!\n\n"
+        f"Amount of new blocks since your last login! {new_blocks_count}\n\n"
         f"Current amount of transactions in pool is: {len(TransactionPool.TransactionPool().get_transactions())}\n"
         f"Current amount of blocks in the chain is: {len(Blockchain.Blockchain().chain)}\n"
     )

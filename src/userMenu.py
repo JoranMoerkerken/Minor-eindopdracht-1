@@ -6,13 +6,15 @@ import TransactionPool
 import Blockchain
 import database
 
-def transfer_coin():
+def transfer_coin(user):
     print("transfer coin has been selected")
-def explore_blockchain():
-    print("Explore the blockchain has been selected")
+def explore_blockchain(user):
+    Blockchain.Blockchain().explore_blockchain()
+    UserMenu(user)
 
-def explore_transactions():
-    print("Explore")
+def explore_transactions(user):
+    TransactionPool.TransactionPool().explore_transactions(user)
+    UserMenu(user)
 
 def search_user(logged_in_user):
     print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"
@@ -58,7 +60,7 @@ def search_user(logged_in_user):
 
     conn.close()
 
-def check_pool():
+def check_pool(user):
     print("Check the pool has been selected")
 
 def cancel_transaction(user):
@@ -95,10 +97,10 @@ def cancel_transaction(user):
     print("Transaction cancelled successfully!")
     UserMenu(user)
 
-def mine_block():
+def mine_block(user):
     print("Mine")
 
-def logout():
+def logout(user):
     print("Logout")
 
 def newBlocks(user):
@@ -145,8 +147,5 @@ def UserMenu(user):
 
     index = menuMaker.select_menu_option(message, options)
 
-    if index < len(actions):
-        if index == 2 or index == 4:
-            actions[index](user)
-        else:
-            actions[index]()
+    actions[index](user)
+

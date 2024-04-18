@@ -89,12 +89,19 @@ class Blockchain:
         return selected_txs
 
     def print_blockchain(self):
-        for i, block in enumerate(self.chain):
-            print("-------------------------")
-            print(f"Block {i + 1}:")
-            print(f"Timestamp: {block.timestamp}")
-            print(f"Transactions: {block.transactions}")
-            print(f"Previous Hash: {block.previous_hash}")
-            print(f"Nonce: {block.nonce}")
-            print(f"Hash: {block.hash.hex()}")
-            print(f"Amount of people who validated: {len(block.validated_By)}")
+        if len(self.chain) == 0:
+            print("The Chain is empty")
+            input("Press Enter to continue...")
+        else:
+            for i, block in enumerate(self.chain):
+                print("╔═══════════════════════════════════════════╗")
+                print(f"║ Block {i + 1}:")
+                print(f"║ Timestamp: {block.timestamp}")
+                print(f"║ Transactions: {block.transactions}")
+                print(f"║ Previous Hash: {block.previous_hash}")
+                print(f"║ Nonce: {block.nonce}")
+                print(f"║ Hash: {block.hash.hex()}")
+                print(f"║ Amount of people who validated: {len(block.validated_By)}")
+                print("╚═══════════════════════════════════════════╝")
+                print("")
+            input("Press Enter to continue...")

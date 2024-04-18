@@ -75,7 +75,10 @@ class TransactionPool:
         print("Transaction Pool:")
         print("----------------")
         for tx in self.transactions:
-            sender = database.get_username(tx.inputs[0][0])
+            if not tx.inputs:
+                sender = 'system'
+            else:
+                sender = database.get_username(tx.inputs[0][0])
             receiver = database.get_username(tx.outputs[0][0])
             amount = tx.outputs[0][1] if tx.outputs else 50
             print(f"Type: {tx.type}, Sender: {sender}, Receiver: {receiver}, Amount: {amount}")

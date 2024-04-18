@@ -108,8 +108,16 @@ def sign_up():
     # Close database connection
     conn.close()
 
+    #add sign up reward to pool
+    tx_pool = TransactionPool.TransactionPool()
+    tx1 = Transaction.Tx()
+    tx1.set_type('reward')
+    tx1.add_output(public_key.decode(), 50)
+    tx_pool.add_transaction(tx1)
+    tx_pool.print_transactions()
+
     print("Sign up successful.")
-    userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
+    # userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
 
 def login():
     username = input("Enter your username: ")
@@ -132,6 +140,9 @@ def explore_blockchain():
 def exit_program():
     print("Exiting...")
 
+def onStartUp():
+    print("Starting up...")
+
 def public_menu():
     options = ["Login", "Sign up", "Explore the blockchain", "Exit"]
     actions = [login, sign_up, explore_blockchain, exit_program]  # Define your action functions here
@@ -141,5 +152,5 @@ def public_menu():
         actions[index]()
 
 if __name__ == "__main__":
-    test_file.test_transaction_pool()
-    # public_menu()
+    # test_file.test_transaction_pool()
+    public_menu()

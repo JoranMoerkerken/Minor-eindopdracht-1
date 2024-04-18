@@ -1,6 +1,5 @@
 import pickle
 import os
-import sqlite3
 import database
 
 
@@ -80,5 +79,25 @@ class TransactionPool:
             receiver = database.get_username(tx.outputs[0][0])
             amount = tx.outputs[0][1] if tx.outputs else 50
             print(f"Type: {tx.type}, Sender: {sender}, Receiver: {receiver}, Amount: {amount}")
+
+    def get_balance(self, public_key):
+        """
+        Get the balance of a user based on the transactions in the pool.
+
+        Args:
+        - public_key (str): Public key of the user.
+
+        Returns:
+        - float: Balance of the user.
+        """
+        balance = 0.0
+        for tx in self.transactions:
+            for address, amount in tx.inputs:
+                if address == public_key:
+                    balance -= amount
+            for address, amount in tx.outputs:
+                if address == public_key:
+                    balance += amount
+        return balance
 
 

@@ -1,10 +1,6 @@
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding
-import sqlite3
-import TransactionPool
 import Transaction
+import TransactionPool
 import database
-import pickle
 
 def test_transaction_pool():
     # Create a TransactionPool object
@@ -23,12 +19,18 @@ def test_transaction_pool():
         tx1.add_output(user2['public_key'], 50)
         tx1.sign(user1['private_key'])  # Using private_key_user1 to sign
 
-        savefile = open("block.dat", "wb")
-        pickle.dump(tx1, savefile)
-        savefile.close()
-
         # Add the transaction to the transaction pool
         tx_pool.add_transaction(tx1)
 
         # Print transactions in the pool
         tx_pool.print_transactions()
+
+        # Print balance of users
+        print(f"Balance of {user1['username']}: {tx_pool.get_balance(user1['public_key'])}")
+        print(f"Balance of {user2['username']}: {tx_pool.get_balance(user2['public_key'])}")
+
+    # Verify the transaction
+    if tx1.verify():
+        print("Transaction is valid.")
+    else:
+        print("Transaction is not valid.")

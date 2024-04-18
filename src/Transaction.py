@@ -1,108 +1,87 @@
-#!/usr/bin/env python3
-""" 
-The goal of this exercise is to complete the transaction module.
-In this exercise you need to add a __repr__() function that will be used
-to show the details of transaction. 
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+import database
 
-Your task is to:
-    * locate the TODOs in this file
-    * complete the missing part from the code 
-    * run the test of this exercise located in same folder.
-
-To test run 'TxBlock_t.py' in your command line
-
-Notes:
-    * do not change class structure or method signature to not break unit tests
-    * Check previous tutorials for more information on this topic
-"""
-
-
-from Signature import *
-types = ['NORMAL', 'REWARD','MINEREWARD']
 class Tx:
-    inputs = None
-    outputs =None
-    fee=None
-    sigs = None
-    reqd = None
-    def __init__(self, type = "NORMAL"):
-        self.type = type
+    def __init__(self):
         self.inputs = []
         self.outputs = []
-        self.sigs = []
-        self.reqd = []
-        self.fee = 0
+        self.type = 'transaction'
 
-    def add_input(self, from_addr, amount):
-        self.inputs.append((from_addr, amount))
+    def add_input(self, from_address, amount):
+        """
+        Add an input to the transaction.
 
-    def add_output(self, to_addr, amount):
-        self.outputs.append((to_addr, amount))
+        Args:
+        - from_address (str): Public key of the sender.
+        - amount (float): Amount to be sent.
+        """
+        self.inputs.append((from_address, amount))
 
-    def add_reqd(self, addr):
-        self.reqd.append(addr)
+    def add_output(self, to_address, amount):
+        """
+        Add an output to the transaction.
 
-    def sign(self, private):
-        message = self.__gather()
-        newsig = sign(message, private)
-        self.sigs.append(newsig)
-               
-    def is_valid(self):
-        if self.type == "REWARD" or self.type == "MINEREWARD":
-            if len(self.inputs)!=0 and len(self.outputs)!=1:
-                return False
+        Args:
+        - to_address (str): Public key of the receiver.
+        - amount (float): Amount to be received.
+        """
+        self.outputs.append((to_address, amount))
+
+    def sign(self, private_key):
+        """
+        Sign the transaction with a private key.
+
+        Args:
+        - private_key (str): Private key used for signing.
+        """
+        message = self.__gather_message()
+        signature = private_key.sign(
+            message.encode(),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        self.signature = signature
+
+    def verify(self):
+        """
+        Verify the signature of the transaction.
+
+        Returns:
+        - bool: True if the signature is valid, False otherwise.
+        """
+        message = self.__gather_message()
+        public_key = serialization.load_pem_public_key(
+            self.inputs[0][0].encode()
+        )
+        try:
+            public_key.verify(
+                self.signature,
+                message.encode(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
             return True
-        else:
-            total_in = 0
-            total_out = 0
-            message = self.__gather()
-            for addr,amount in self.inputs:
-                found = False
-                for s in self.sigs:
-                    if verify(message, s, addr):
-                        found = True
-                if not found:
-                    # print ("No good sig found for " + str(message))
-                    return False
-                if amount < 0:
-                    return False
-                total_in = total_in + amount
-            for addr in self.reqd:
-                found = False
-                for s in self.sigs:
-                    if verify(message, s, addr):
-                        found = True
-                if not found:
-                    return False
-            for addr,amount in self.outputs:
-                if amount < 0:
-                    return False
-                total_out = total_out + amount
+        except:
+            return False
 
-            if total_out > total_in:
-                # print("Outputs exceed inputs")
-                return False
-            
-            return True
+    def __gather_message(self):
+        """
+        Gather message to be signed or verified.
 
-    def __gather(self):
-        data=[]
-        data.append(self.inputs)
-        data.append(self.outputs)
-        data.append(self.reqd)
-        return data
+        Returns:
+        - str: Concatenated string of inputs and outputs.
+        """
+        message = ""
+        for address, amount in self.inputs:
+            message += address + str(amount)
+        for address, amount in self.outputs:
+            message += address + str(amount)
+        return message
 
-    def __repr__(self):
-        repr_str = "Inputs:\n"
-        for addr, amt in self.inputs:
-            repr_str += str(amt) + " from " + str(addr) + "\n"
-        repr_str += "Outputs:\n"
-        for addr, amt in self.outputs:
-            repr_str += str(amt) + " to " + str(addr) + "\n"
-        repr_str += "Extra Required Signatures:\n"
-        for r in self.reqd:
-            repr_str += str(r) + "\n"
-        repr_str += "Signatures:\n"
-        for s in self.sigs:
-            repr_str += str(s) + "\n"
-        return repr_str

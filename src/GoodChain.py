@@ -141,5 +141,5 @@ def public_menu():
         actions[index]()
 
 if __name__ == "__main__":
-    # test_file.test_transaction_pool()
-    public_menu()
+    test_file.test_transaction_pool()
+    # public_menu()

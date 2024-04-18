@@ -2,6 +2,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import pickle
 import datetime
+import hashlib
 
 class Block:
     def __init__(self, transactions, previous_hash=None):
@@ -14,16 +15,14 @@ class Block:
         self.invalidated_by = []
 
     def calculate_hash(self):
-        block_string = f"{self.timestamp}{self.transactions}{self.previous_hash}".encode()
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(block_string)
-        return digest.finalize()
+        block_string = f"{self.timestamp}{self.transactions}{self.previous_hash}{self.nonce}".encode()
+        return hashlib.sha256(block_string).hexdigest()
 
     def mine_block(self, difficulty):
-        while not self.hash.startswith(b'0' * difficulty):
+        while not self.hash.startswith('0' * difficulty):
             self.nonce += 1
             self.hash = self.calculate_hash()
-        print(f"Block mined: {self.hash.hex()}")
+        print(f"Block mined: {self.hash}")
 
     def serialize(self):
         return pickle.dumps(self)

@@ -9,7 +9,7 @@ import TransactionPool
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.difficulty = 0  # You can adjust this value
+        self.difficulty = 5  # You can adjust this value
         self.load_from_file()
 
     def add_block(self, block):
@@ -100,7 +100,7 @@ class Blockchain:
                 print(f"║ Transactions: {block.transactions}")
                 print(f"║ Previous Hash: {block.previous_hash}")
                 print(f"║ Nonce: {block.nonce}")
-                print(f"║ Hash: {block.hash.hex()}")
+                print(f"║ Hash: {block.hash}")
                 print(f"║ Amount of people who validated: {len(block.validated_By)}")
                 print("╚═══════════════════════════════════════════╝")
                 print("")

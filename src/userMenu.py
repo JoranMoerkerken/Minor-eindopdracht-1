@@ -4,6 +4,7 @@ import sqlite3
 import Transaction
 import TransactionPool
 import Blockchain
+import database
 
 def transfer_coin():
     print("transfer coin has been selected")
@@ -60,8 +61,39 @@ def search_user(logged_in_user):
 def check_pool():
     print("Check the pool has been selected")
 
-def cancel_transaction():
-    print("Cancel a transaction has been selected")
+def cancel_transaction(user):
+    print(f"Greetings {user.username}. Inside this function, you can cancel your own transactions!")
+
+    # Retrieve transactions related to the logged-in user from the transaction pool
+    transaction_pool = TransactionPool.TransactionPool()
+    user_transactions = [tx for tx in transaction_pool.get_transactions() if tx.inputs and tx.inputs[0][0] == user.publicKey]
+
+    if not user_transactions:
+        print("No transactions to cancel.")
+        return
+
+    transaction_list = []
+    for i, tx in enumerate(user_transactions):
+        sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
+        receiver = database.get_username(tx.outputs[0][0])
+        amount = tx.outputs[0][1] if tx.outputs else 50
+        transaction_str = f"{i + 1}. {amount} to {receiver}"
+        transaction_list.append(transaction_str)
+
+    header = (f"Greetings {user.username}. Inside this function, you can cancel your own transactions!"
+              "Select a transaction to cancel:")
+    # Select transaction to cancel
+    index = menuMaker.select_menu_option("Select a transaction to cancel:", transaction_list)
+
+    if index is None:
+        print("Invalid selection.")
+        return
+
+    # Remove selected transaction from the transaction pool
+    selected_tx = user_transactions[index - 1]
+    transaction_pool.remove_transaction(selected_tx)
+    print("Transaction cancelled successfully!")
+    UserMenu(user)
 
 def mine_block():
     print("Mine")
@@ -91,6 +123,7 @@ def newBlocks(user):
 
 
 def UserMenu(user):
+
     options = ["Transfer coins", "Explore the blockchain","Search users", "Check the pool", "Cancel a transaction", "Mine a block", "logout"]
     actions = [transfer_coin, explore_blockchain,search_user, check_pool ,cancel_transaction, mine_block,logout ]
 
@@ -107,13 +140,13 @@ def UserMenu(user):
         f"your actual balance = \n\n"
         f"Amount of new blocks since your last login!\n\n"
         f"Current amount of transactions in pool is: {len(TransactionPool.TransactionPool().get_transactions())}\n"
-        f"Current amount of blocks in the chain is: {len(Blockchain.Blockchain().chain)}"
+        f"Current amount of blocks in the chain is: {len(Blockchain.Blockchain().chain)}\n"
     )
 
     index = menuMaker.select_menu_option(message, options)
 
     if index < len(actions):
-        if index == 2:
+        if index == 2 or index == 4:
             actions[index](user)
         else:
             actions[index]()

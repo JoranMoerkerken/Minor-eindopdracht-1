@@ -2,6 +2,7 @@ import os
 import pickle
 import Block
 import TransactionPool
+import GoodChain
 
 class Blockchain:
     def __init__(self):
@@ -40,13 +41,16 @@ class Blockchain:
         return True
 
     def load_from_file(self):
+        GoodChain.check_file_integrity()
         if os.path.exists('../data/block.dat'):
             with open('../data/block.dat', 'rb') as file:
                 self.chain = pickle.load(file)
 
     def save_to_file(self):
+        GoodChain.check_file_integrity()
         with open('../data/block.dat', 'wb') as file:
             pickle.dump(self.chain, file)
+        GoodChain.create_hashes()
 
     def validate_block(self, block):
         block_hash = block.calculate_hash()

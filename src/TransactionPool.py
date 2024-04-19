@@ -1,6 +1,7 @@
 import pickle
 import os
 import database
+import GoodChain
 
 
 class TransactionPool:
@@ -48,17 +49,21 @@ class TransactionPool:
         """
         Save the current transaction pool to a .dat file.
         """
+        GoodChain.check_file_integrity()
         with open("../data/TransactionPool.dat", "wb") as file:
             pickle.dump(self.transactions, file)
+        GoodChain.create_hashes()
 
     def load_from_file(self):
         """
         Load transactions from a .dat file into the transaction pool.
         If the file does not exist, it initializes an empty pool.
         """
+        GoodChain.check_file_integrity()
         if os.path.exists("../data/TransactionPool.dat"):
             with open("../data/TransactionPool.dat", "rb") as file:
                 self.transactions = pickle.load(file)
+
 
     def remove_file(self):
         """

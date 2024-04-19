@@ -1,6 +1,7 @@
 # Standard library imports
 import os
 import sqlite3
+import hashlib
 
 # Third-party imports
 from cryptography.hazmat.primitives import hashes
@@ -61,6 +62,7 @@ def verify_password(public_key_pem, password, signature):
         return False
 
 def sign_up():
+    check_file_integrity()
     username = input("Enter your username: ")
     password = input("Enter your password: ")
 
@@ -116,7 +118,9 @@ def sign_up():
     tx_pool.add_transaction(tx1)
     tx_pool.print_transactions()
 
+    create_hashes()
     print("Sign up successful.")
+    input("Press Enter to continue...")
     # userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
 
 def login():
@@ -127,9 +131,11 @@ def login():
     # Verify the password using the public key
     if not verify_password(user_data[4], password, user_data[2]):
         print("Incorrect username or password. Please try again.")
+        input("Press Enter to continue...")
         return
 
     print("Login successful.")
+    input("Press Enter to continue...")
     userMenu.UserMenu(User.User(user_data[1], user_data[2], user_data[3], user_data[4]))
 
 
@@ -140,9 +146,64 @@ def explore_blockchain():
 def exit_program():
     print("Exiting...")
 
-def onStartUp():
-    print("Starting up...")
-    #alle files hashen en checken of het overeenkomt met wat er in de files staat met behulp van hashing
+def check_file_integrity():
+    files_to_check = [
+        "../data/block.dat",
+        "../data/TransactionPool.dat",
+        "../data/user_database.db"
+    ]
+
+    for file_path in files_to_check:
+        if os.path.exists(file_path):
+            # Read the current hash from the hash file
+            hash_file_path = f"../data/{os.path.basename(file_path)}.hash"
+
+            if os.path.exists(hash_file_path):
+                with open(hash_file_path, "r") as hash_file:
+                    stored_hash = hash_file.read().strip()
+
+                # Calculate the hash of the file
+                current_hash = hashlib.sha256()
+                with open(file_path, "rb") as file:
+                    for chunk in iter(lambda: file.read(4096), b""):
+                        current_hash.update(chunk)
+
+                current_hash_hex = current_hash.hexdigest()
+
+                # Compare the hashes
+                if current_hash_hex == stored_hash:
+                    return
+                    # print(f"File {file_path} integrity verified.")
+                else:
+                    print(f"Oh no! Invalid data found in {file_path}.")
+
+def create_hashes():
+    files_to_hash = [
+        "../data/block.dat",
+        "../data/TransactionPool.dat",
+        "../data/user_database.db"
+    ]
+
+    for file_path in files_to_hash:
+        if os.path.exists(file_path):
+            # Calculate the hash of the file
+            current_hash = hashlib.sha256()
+            with open(file_path, "rb") as file:
+                for chunk in iter(lambda: file.read(4096), b""):
+                    current_hash.update(chunk)
+
+            current_hash_hex = current_hash.hexdigest()
+
+            # Write the hash to the hash file
+            hash_file_path = f"../data/{os.path.basename(file_path)}.hash"
+            with open(hash_file_path, "w") as hash_file:
+                hash_file.write(current_hash_hex)
+
+            print(f"Hash created for {file_path} and saved to {hash_file_path}.")
+        else:
+            print(f"File {file_path} does not exist. Skipping...")
+
+
 def public_menu():
     options = ["Login", "Sign up", "Explore the blockchain", "Exit"]
     actions = [login, sign_up, explore_blockchain, exit_program]  # Define your action functions here
@@ -153,6 +214,8 @@ def public_menu():
 
 if __name__ == "__main__":
     # test_file.test_transaction_pool()
+    check_file_integrity()
+    create_hashes()
     public_menu()
 
 # een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd.

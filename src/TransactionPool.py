@@ -92,17 +92,21 @@ class TransactionPool:
         - public_key (str): Public key of the user.
 
         Returns:
-        - float: Balance of the user.
+        - float: Positive balance (received amount).
+        - float: Negative balance (sent amount).
         """
-        balance = 0.0
+        positive_balance = 0.0
+        negative_balance = 0.0
+
         for tx in self.transactions:
             for address, amount in tx.inputs:
                 if address == public_key:
-                    balance -= amount
+                    negative_balance += amount
             for address, amount in tx.outputs:
                 if address == public_key:
-                    balance += amount
-        return balance
+                    positive_balance += amount
+
+        return positive_balance, negative_balance
 
     def start_up(self):
         """

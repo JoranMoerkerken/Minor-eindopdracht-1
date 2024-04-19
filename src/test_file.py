@@ -5,15 +5,11 @@ import TransactionPool
 import database
 import Blockchain
 
+
 def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
-    #
-    # if blockchain.is_valid():
-    #     print("Blockchain is valid.")
-    # else:
-    #     print("Blockchain is not valid.")
-    #
+
     # blockchain.print_blockchain()
     # return
     # Fetch all users
@@ -39,11 +35,19 @@ def test_blockchain():
         tx_pool.load_from_file()
         blockchain.mine_block(transactions)
 
-        # Verify block validation
-        if blockchain.is_valid():
-            print("Blockchain is valid.")
-        else:
-            print("Blockchain is not valid.")
+        # Check balances after mining
+        confirmed_balance_user1, pending_positive_user1, pending_negative_user1 = blockchain.get_balance(
+            user1['public_key'])
+        confirmed_balance_user2, pending_positive_user2, pending_negative_user2 = blockchain.get_balance(
+            user2['public_key'])
+
+        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")
+        print(f"Pending Positive Balance for User1: {pending_positive_user1}")
+        print(f"Pending Negative Balance for User1: {pending_negative_user1}")
+
+        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")
+        print(f"Pending Positive Balance for User2: {pending_positive_user2}")
+        print(f"Pending Negative Balance for User2: {pending_negative_user2}")
 
         # Create more transactions and mine another block
         for _ in range(3):
@@ -57,18 +61,30 @@ def test_blockchain():
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()
         blockchain.mine_block(transactions)
-        blockchain.print_blockchain()
 
-        # Verify block validation again
+        # Check balances after mining again
+        confirmed_balance_user1, pending_positive_user1, pending_negative_user1 = blockchain.get_balance(
+            user1['public_key'])
+        confirmed_balance_user2, pending_positive_user2, pending_negative_user2 = blockchain.get_balance(
+            user2['public_key'])
+
+        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")
+        print(f"Pending Positive Balance for User1: {pending_positive_user1}")
+        print(f"Pending Negative Balance for User1: {pending_negative_user1}")
+
+        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")
+        print(f"Pending Positive Balance for User2: {pending_positive_user2}")
+        print(f"Pending Negative Balance for User2: {pending_negative_user2}")
+
+        # Verify block validation
         if blockchain.is_valid():
             print("Blockchain is valid.")
         else:
             print("Blockchain is not valid.")
-
-
-
     else:
         print("Not enough users to create transactions.")
 
+
 if __name__ == "__main__":
     test_blockchain()
+

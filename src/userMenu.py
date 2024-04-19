@@ -177,31 +177,39 @@ def logout(user):
 def newBlocks(user):
     blockchain = Blockchain.Blockchain()
     newBlocks = 0
-    for i in range(1, len(blockchain.chain)):
+    for i in range(len(blockchain.chain)):
         current_block = blockchain.chain[i]
-        previous_block = blockchain.chain[i - 1]
 
-        if current_block.hash != current_block.calculate_hash():
-            if user not in current_block.invalidated_by:
-                current_block.invalidated_by.append(user)
-                if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
-                    blockchain.chain[i] = None
+        if i == 0:
+            if current_block.hash != current_block.calculate_hash():
+                return False, newBlocks
+            elif user.username not in current_block.validated_By:
+                    current_block.validated_By.append(user.username)
+                    newBlocks += 1
+        else:
+            previous_block = blockchain.chain[i - 1]
+            ##########
 
-            return False, newBlocks
+            if current_block.hash != current_block.calculate_hash():
+                if user not in current_block.invalidated_by:
+                    current_block.invalidated_by.append(user)
+                    if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
+                        blockchain.chain.pop(i)
 
-        if current_block.previous_hash != previous_block.hash:
-            if user not in current_block.invalidated_by:
-                current_block.invalidated_by.append(user)
-                if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
-                    blockchain.chain[i] = None
-            return False, newBlocks
+                return False, newBlocks
 
+            if current_block.previous_hash != previous_block.hash:
+                if user not in current_block.invalidated_by:
+                    current_block.invalidated_by.append(user)
+                    if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
+                        blockchain.chain.pop(i)
+                return False, newBlocks
 
-        # Check if the user is already in the validated_By list
-        if user not in current_block.validated_By:
-            current_block.validated_By.append(user)
-            newBlocks += 1
-
+            # Check if the user is already in the validated_By list
+            if user.username not in current_block.validated_By:
+                current_block.validated_By.append(user.username)
+                newBlocks += 1
+    blockchain.save_to_file()
     return True, newBlocks
 
 

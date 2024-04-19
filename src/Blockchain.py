@@ -31,12 +31,10 @@ class Blockchain:
 
                 # Check hash
                 if current_block.hash != current_block.calculate_hash():
-                    print(f"Hash mismatch in block {i + 1}")
                     return False
 
                 # Check previous_hash
                 if current_block.previous_hash != previous_block.hash:
-                    print(f"Previous hash mismatch between block {i} and block {i + 1}")
                     return False
 
         return True

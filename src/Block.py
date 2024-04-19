@@ -5,7 +5,7 @@ import datetime
 import hashlib
 
 class Block:
-    def __init__(self, transactions, previous_hash=None):
+    def __init__(self, transactions, previous_hash):
         self.timestamp = datetime.datetime.now()
         self.transactions = transactions
         self.previous_hash = previous_hash

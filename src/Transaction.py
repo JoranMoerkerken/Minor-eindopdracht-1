@@ -94,3 +94,18 @@ class Tx:
             message += address + str(amount)
         return message
 
+    def __repr__(self):
+        repr_str = ""
+        repr_str += " INPUTS:\n"
+        for addr, amount in self.inputs:
+            repr_str += f"{amount} from {addr}\n"
+
+        repr_str += "OUTPUTS:\n"
+        for addr, amount in self.outputs:
+            repr_str += f"{amount} to {addr}\n"
+
+        repr_str += "SIGNATURES:\n"
+        for sig in self.signature:
+            repr_str += f"{sig}\n"
+
+        return repr_str

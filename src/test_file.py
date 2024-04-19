@@ -1,3 +1,5 @@
+import os
+
 import Transaction
 import TransactionPool
 import database
@@ -6,7 +8,14 @@ import Blockchain
 def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
-
+    #
+    # if blockchain.is_valid():
+    #     print("Blockchain is valid.")
+    # else:
+    #     print("Blockchain is not valid.")
+    #
+    # blockchain.print_blockchain()
+    # return
     # Fetch all users
     users = database.fetch_all_users()
 
@@ -26,11 +35,9 @@ def test_blockchain():
             tx_pool.add_transaction(tx)
 
         # Mine a block
-        tx_pool.print_transactions()
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()
         blockchain.mine_block(transactions)
-        tx_pool.print_transactions()
 
         # Verify block validation
         if blockchain.is_valid():
@@ -47,11 +54,10 @@ def test_blockchain():
             tx_pool.add_transaction(tx)
 
         # Mine another block
-        tx_pool.print_transactions()
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()
         blockchain.mine_block(transactions)
-        tx_pool.print_transactions()
+        blockchain.print_blockchain()
 
         # Verify block validation again
         if blockchain.is_valid():
@@ -60,7 +66,6 @@ def test_blockchain():
             print("Blockchain is not valid.")
 
 
-        blockchain.print_blockchain()
 
     else:
         print("Not enough users to create transactions.")

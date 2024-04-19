@@ -7,7 +7,53 @@ import Blockchain
 import database
 
 def transfer_coin(user):
-    print("transfer coin has been selected")
+    # Fetch all users' usernames
+    users = database.fetch_all_users()
+    allUserNames = [names['username'] for names in users if names['username'] != user.username]
+
+    if not allUserNames:
+        print("No other users found.")
+        UserMenu(user)
+        return
+
+    index = menuMaker.select_menu_option("Please choose the member you wish to transfer coin to", allUserNames)
+
+    # Selected recipient
+    selected_username = allUserNames[index]
+
+    # Input the amount to transfer
+    try:
+        amount = float(input("Enter the amount to transfer. example inputs are 5 or 5.0:\n"))
+    except ValueError:
+        print("Invalid amount. Please enter a valid number.")
+        input("Press Enter to try agian...")
+        transfer_coin(user)
+        return
+    if amount < 0:
+        print("Invalid amount. Please enter a valid number.")
+        input("Press Enter to try agian...")
+        transfer_coin(user)
+        return
+
+    #to lazy to match selected username to users
+    receiver = database.fetch_user_data(selected_username)
+
+    # Create a new transaction
+    tx = Transaction.Tx()
+    tx.add_input(user.publicKey, amount)
+    tx.add_output(receiver[4], amount)
+    tx.sign(user.privateKey)
+
+    # Add transaction to the transaction pool
+    transaction_pool = TransactionPool.TransactionPool()
+    transaction_pool.add_transaction(tx)
+
+    print(f"Ur transaction is now pending. {amount} coins to {selected_username}.")
+    input("Press Enter to continue...")
+    UserMenu(user)
+
+
+
 def explore_blockchain(user):
     Blockchain.Blockchain().print_blockchain()
     UserMenu(user)
@@ -18,7 +64,7 @@ def explore_transactions(user):
     user_transactions = [tx for tx in transaction_pool.get_transactions() if tx.inputs and tx.inputs[0][0] == user.publicKey]
 
     if not user_transactions:
-        print("No transactions found for the user.")
+        print("No transactions found.")
         UserMenu(user)
         return
 
@@ -117,7 +163,7 @@ def cancel_transaction(user):
         return
 
     # Remove selected transaction from the transaction pool
-    selected_tx = user_transactions[index - 1]
+    selected_tx = user_transactions[index]
     transaction_pool.remove_transaction(selected_tx)
     print("Transaction cancelled successfully!")
     UserMenu(user)
@@ -151,7 +197,7 @@ def newBlocks(user):
 
 def UserMenu(user):
 
-    options = ["Transfer coins", "Explore the blockchain","Explore pending transactions", "Search users", "Check the pool", "Cancel a pending transaction", "Mine a block", "logout"]
+    options = ["Transfer coins", "Explore the blockchain","Explore your pending transactions", "Search users", "Explore the transactionpool", "Cancel a pending transaction", "Mine a block", "logout"]
     actions = [transfer_coin, explore_blockchain,explore_transactions, search_user, check_pool ,cancel_transaction, mine_block,logout ]
 
     is_valid, new_blocks_count = newBlocks(user)

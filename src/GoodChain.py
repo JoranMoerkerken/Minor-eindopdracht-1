@@ -109,6 +109,7 @@ def sign_up():
 
     # Close database connection
     conn.close()
+    create_hashes()
 
     #add sign up reward to pool
     tx_pool = TransactionPool.TransactionPool()
@@ -116,12 +117,10 @@ def sign_up():
     tx1.set_type('reward')
     tx1.add_output(public_key.decode(), 50)
     tx_pool.add_transaction(tx1)
-    tx_pool.print_transactions()
 
-    create_hashes()
     print("Sign up successful.")
     input("Press Enter to continue...")
-    # userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
+    userMenu.UserMenu(User.User(username, hashed_password, private_key, public_key))
 
 def login():
     username = input("Enter your username: ")
@@ -172,10 +171,10 @@ def check_file_integrity():
 
                 # Compare the hashes
                 if current_hash_hex == stored_hash:
-                    return
-                    # print(f"File {file_path} integrity verified.")
+                    pass
                 else:
-                    print(f"Oh no! Invalid data found in {file_path}.")
+                    print(f"Invalid data found in {file_path}.")
+                    input("Press Enter to continue...")
 
 def create_hashes():
     files_to_hash = [
@@ -198,10 +197,6 @@ def create_hashes():
             hash_file_path = f"../data/{os.path.basename(file_path)}.hash"
             with open(hash_file_path, "w") as hash_file:
                 hash_file.write(current_hash_hex)
-
-            print(f"Hash created for {file_path} and saved to {hash_file_path}.")
-        else:
-            print(f"File {file_path} does not exist. Skipping...")
 
 
 def public_menu():

@@ -33,23 +33,6 @@ class Blockchain:
                 return False
 
         return True
-
-    def start_up(self, user):
-        newBlocks = 0
-        for i in range(1, len(self.chain)):
-            current_block = self.chain[i]
-            previous_block = self.chain[i - 1]
-
-            if current_block.hash != current_block.calculate_hash():
-                return False
-
-            if current_block.previous_hash != previous_block.hash:
-                return False
-
-            if user not in current_block.validated_By:
-                current_block.validated_By.append(user)
-                newBlocks += 1
-        return True, newBlocks
     def load_from_file(self):
         if os.path.exists('../data/block.dat'):
             with open('../data/block.dat', 'rb') as file:

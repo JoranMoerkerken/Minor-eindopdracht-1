@@ -96,17 +96,15 @@ class Tx:
         return message
 
     def __repr__(self):
-        repr_str = ""
+        repr_str = f"Type: {self.type}, Time: {self.time}\n"
+
         repr_str += " INPUTS:\n"
         for addr, amount in self.inputs:
-            repr_str += f"{amount} from {addr}\n"
+            fee = amount - sum(output_amount for _, output_amount in self.outputs)
+            repr_str += f"  {amount} from {addr} (Fee: {fee})\n"
 
         repr_str += "OUTPUTS:\n"
         for addr, amount in self.outputs:
-            repr_str += f"{amount} to {addr}\n"
-
-        repr_str += "SIGNATURES:\n"
-        for sig in self.signature:
-            repr_str += f"{sig}\n"
+            repr_str += f"  {amount} to {addr}\n"
 
         return repr_str

@@ -107,7 +107,13 @@ class Blockchain:
 
         # Separate transactions into 'reward' and 'transaction' lists
         reward_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'reward']
-        regular_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'transaction']
+
+        # Sort 'transaction' transactions by transaction fee in descending order
+        regular_txs = sorted(
+            [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'transaction'],
+            key=lambda tx: tx.inputs[0][1] - (tx.outputs[0][1] if tx.outputs else 50),
+            reverse=True
+        )
 
         # Select reward transactions first
         selected_txs.extend(reward_txs[:min(9, len(reward_txs))])

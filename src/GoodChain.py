@@ -17,6 +17,8 @@ import database
 import Transaction
 import TransactionPool
 import test_file
+import Blockchain
+
 
 def generate_keys():
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -139,8 +141,13 @@ def login():
 
 
 def explore_blockchain():
-    input()
-    print("Explore the blockchain function called.")
+    Blockchain.Blockchain().print_blockchain()
+    public_menu()
+
+def check_pool():
+    TransactionPool.TransactionPool().print_transactions()
+    public_menu()
+
 
 def exit_program():
     print("Exiting...")
@@ -200,8 +207,8 @@ def create_hashes():
 
 
 def public_menu():
-    options = ["Login", "Sign up", "Explore the blockchain", "Exit"]
-    actions = [login, sign_up, explore_blockchain, exit_program]  # Define your action functions here
+    options = ["Login", "Sign up", "Explore the blockchain","Explore the transactionpool", "Exit"]
+    actions = [login, sign_up, explore_blockchain,check_pool, exit_program]  # Define your action functions here
 
     index = menuMaker.select_menu_option(None, options)
     if index < len(actions):

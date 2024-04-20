@@ -172,7 +172,7 @@ def mine_block(user):
     print("Mine")
 
 def logout(user):
-    print("Logout")
+    GoodChain.public_menu()
 
 def newBlocks(user):
     blockchain = Blockchain.Blockchain()

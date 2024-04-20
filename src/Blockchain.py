@@ -164,10 +164,4 @@ class Blockchain:
                 print(f"║ Amount of people who marked this block invalid: {len(block.invalidated_by)}")
                 print("╚═══════════════════════════════════════════╝")
                 print("")
-
-                for j, tx in enumerate(block.transactions):
-                    print(f"Transaction {j + 1}:")
-                    print(f"Signature Verification: {tx.verify()}")
-                    print("")
-
             input("Press Enter to continue...")

@@ -28,18 +28,6 @@ def test_blockchain():
             tx.sign(user1['private_key'])
             tx_pool.add_transaction(tx)
 
-        for _ in range(10):
-            tx = Transaction.Tx()
-            tx.add_input(user1['public_key'], 10, 10)  # Adding a transaction fee of 1 unit
-            tx.add_output(user2['public_key'], 10)
-            tx.sign(user1['private_key'])
-            tx_pool.add_transaction(tx)
-
-        test = blockchain.select_transactions()
-        for tssx in test:
-            print(tssx)
-        tx_pool.print_transactions()
-        return
         # Mine a block
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()

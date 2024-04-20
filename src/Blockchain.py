@@ -18,7 +18,6 @@ class Blockchain:
 
     def mine_block(self, transactions):
         block = Block.Block(transactions, self.chain[-1].hash if self.chain else None)
-        mined_difficulties = []
         correctTime = False
         mined_difficulties = []
         while not correctTime:

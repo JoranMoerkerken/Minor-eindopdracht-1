@@ -4,12 +4,15 @@ import Transaction
 import TransactionPool
 import database
 import Blockchain
-
+import GoodChain
+import User
 
 def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
 
+    blockchain.print_blockchain()
+    return
     # Fetch all users
     users = database.fetch_all_users()
 
@@ -31,8 +34,7 @@ def test_blockchain():
         # Mine a block
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()
-        blockchain.mine_block(transactions)
-
+        blockchain.mine_block(transactions,  User.User("test", "test", "", ""))
         # Check balances after mining
         confirmed_balance_user1, pending_positive_user1, pending_negative_user1 = blockchain.get_balance(
             user1['public_key'])
@@ -58,7 +60,7 @@ def test_blockchain():
         # Mine another block
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()
-        blockchain.mine_block(transactions)
+        blockchain.mine_block(transactions, User.User("test", "test", "", ""))
 
         # Check balances after mining again
         confirmed_balance_user1, pending_positive_user1, pending_negative_user1 = blockchain.get_balance(

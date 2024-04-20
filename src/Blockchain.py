@@ -16,8 +16,8 @@ class Blockchain:
         self.chain.append(block)
         self.save_to_file()
 
-    def mine_block(self, transactions):
-        block = Block.Block(transactions, self.chain[-1].hash if self.chain else None)
+    def mine_block(self, transactions, user):
+        block = Block.Block(transactions, self.chain[-1].hash if self.chain else None, self.chain[-1].id + 1 if self.chain else 0, user)
         correctTime = False
         mined_difficulties = []
         while not correctTime:
@@ -163,13 +163,15 @@ class Blockchain:
         else:
             for i, block in enumerate(self.chain):
                 print("╔═══════════════════════════════════════════╗")
-                print(f"║ Block {i + 1}:")
+                print(f"║ Block {block.id}:")
                 print(f"║ Timestamp: {block.timestamp}")
                 print(f"║ Previous Hash: {block.previous_hash}")
                 print(f"║ Nonce: {block.nonce}")
                 print(f"║ Hash: {block.hash}")
+                print(f"║ Amount of transactions: {len(block.transactions)}")
                 print(f"║ Amount of people who validated: {len(block.validated_By)}")
                 print(f"║ Amount of people who marked this block invalid: {len(block.invalidated_by)}")
+                print(f"║ Created By: {block.Creator}")
                 print("╚═══════════════════════════════════════════╝")
                 print("")
             input("Press Enter to continue...")

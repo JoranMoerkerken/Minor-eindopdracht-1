@@ -223,14 +223,14 @@ def newBlocks(user):
                 return False, newBlocks
 
             if current_block.previous_hash != previous_block.hash:
-                if user not in current_block.invalidated_by:
+                if user not in current_block.invalidated_by and user.username not in current_block.Creator:
                     current_block.invalidated_by.append(user)
                     if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
                         blockchain.chain.pop(i)
                 return False, newBlocks
 
             # Check if the user is already in the validated_By list
-            if user.username not in current_block.validated_By:
+            if user.username not in current_block.validated_By and user.username not in current_block.Creator:
                 current_block.validated_By.append(user.username)
                 newBlocks += 1
     blockchain.save_to_file()

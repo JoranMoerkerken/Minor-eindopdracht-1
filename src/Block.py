@@ -6,7 +6,8 @@ import hashlib
 import time
 
 class Block:
-    def __init__(self, transactions, previous_hash):
+    def __init__(self, transactions, previous_hash, Id, user):
+        self.id = Id
         self.timestamp = datetime.datetime.now()
         self.transactions = transactions
         self.previous_hash = previous_hash
@@ -14,6 +15,8 @@ class Block:
         self.hash = self.calculate_hash()
         self.validated_By = []
         self.invalidated_by = []
+        self.Creator = []
+        self.Creator.append(user.username)
 
     def calculate_hash(self):
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())

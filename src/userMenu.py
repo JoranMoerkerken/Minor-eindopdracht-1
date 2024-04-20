@@ -169,16 +169,31 @@ def cancel_transaction(user):
     UserMenu(user)
 
 def mine_block(user):
+    # Get the last block from the blockchain
     last_block = Blockchain.Blockchain().chain[-1]
+
+    # Check the timestamp difference
     time_difference = (datetime.datetime.now() - last_block.timestamp).total_seconds()
     remaining_time = 180 - time_difference  # 180 seconds = 3 minutes
 
+    # Check if there are at least 5 verified transactions in the pool
+    tx_pool = TransactionPool.TransactionPool()
+    tx_pool.verify_pool()
+    transactions_count = len(tx_pool.get_transactions())
+
     if time_difference > 180:
-        pass
+        if transactions_count >= 5:
+            # Perform mining
+            pass
+        else:
+            print(f"There should be at least 5 verified transactions in the pool. Current count: {transactions_count}.")
+            input("Press Enter to continue...")
+            UserMenu(user)
     else:
         print(f"There need to be three minutes before a new block can be added. Please try again in {int(remaining_time)} seconds.")
         input("Press Enter to continue...")
         UserMenu(user)
+
 
 def logout(user):
     GoodChain.public_menu()

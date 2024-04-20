@@ -113,7 +113,7 @@ class TransactionPool:
 
         return positive_balance, negative_balance
 
-    def start_up(self):
+    def verify_pool(self):
         """
         Verify all transactions in the transaction pool.
         Remove any transactions that fail verification.

@@ -5,7 +5,7 @@ import Transaction
 import TransactionPool
 import Blockchain
 import database
-
+import datetime
 def transfer_coin(user):
     # Fetch all users' usernames
     users = database.fetch_all_users()
@@ -169,7 +169,16 @@ def cancel_transaction(user):
     UserMenu(user)
 
 def mine_block(user):
-    print("Mine")
+    last_block = Blockchain.Blockchain().chain[-1]
+    time_difference = (datetime.datetime.now() - last_block.timestamp).total_seconds()
+    remaining_time = 180 - time_difference  # 180 seconds = 3 minutes
+
+    if time_difference > 180:
+        pass
+    else:
+        print(f"There need to be three minutes before a new block can be added. Please try again in {int(remaining_time)} seconds.")
+        input("Press Enter to continue...")
+        UserMenu(user)
 
 def logout(user):
     GoodChain.public_menu()

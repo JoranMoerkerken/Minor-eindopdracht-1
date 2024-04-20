@@ -14,7 +14,6 @@ class Blockchain:
 
     def add_block(self, block):
         self.chain.append(block)
-        print("blok word opgeslagen")
         self.save_to_file()
 
     def mine_block(self, transactions):

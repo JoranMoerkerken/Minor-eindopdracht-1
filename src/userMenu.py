@@ -224,11 +224,21 @@ def UserMenu(user):
         print("Blockchain validation failed.")
         return False
 
+    blockchain = Blockchain.Blockchain()
+    confirmed_balance, pending_incoming_chain, pending_outgoing_chain = blockchain.get_balance(user.publicKey)
+
+    pool = TransactionPool.TransactionPool()
+    pending_incoming, pending_outgoing= pool.get_balance(user.publicKey)
+
+    pending_balance_outgoing = pending_outgoing + pending_outgoing_chain
+    pending_balance_incoming = pending_incoming_chain + pending_incoming
+    actual_balance = confirmed_balance - pending_balance_outgoing
+
     message = (
         f"Welcome to Goodchain {user.username}!\n\n"
-        f"your confirmed balance =\n"
-        f"your pending balance = \n"
-        f"your actual balance = \n\n"
+        f"your pending incoming balance = {pending_balance_incoming}\n"
+        f"your pending outgoing balance = -{pending_balance_outgoing}\n"
+        f"your spendable balance = {actual_balance}\n\n"
         f"Amount of new blocks since your last login! {new_blocks_count}\n\n"
         f"Current amount of transactions in pool is: {len(TransactionPool.TransactionPool().get_transactions())}\n"
         f"Current amount of blocks in the chain is: {len(Blockchain.Blockchain().chain)}\n"

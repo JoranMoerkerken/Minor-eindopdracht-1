@@ -8,21 +8,29 @@ import time
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.difficulty = 35  # You can adjust this value
-        self.leading_zeroes = 0
+        self.difficulty = 110  # You can adjust this value
+        self.leading_zeroes = 3
         self.load_from_file()
 
     def add_block(self, block):
         self.chain.append(block)
+        print("blok word opgeslagen")
         self.save_to_file()
 
     def mine_block(self, transactions):
         block = Block.Block(transactions, self.chain[-1].hash if self.chain else None)
         mined_difficulties = []
         correctTime = False
-        TotalTime= time.time()
+        mined_difficulties = []
         while not correctTime:
             startTime = time.time()
+            if self.difficulty > 255:
+                self.leading_zeroes += 1
+                self.difficulty = 0
+            elif self.difficulty < 0:
+                self.difficulty = 255
+                self.leading_zeroes -= 1
+
             block.mine_block(self.leading_zeroes, self.difficulty)
             elapsed_time = time.time() - startTime
 
@@ -30,28 +38,26 @@ class Blockchain:
 
             if elapsed_time >= 10 and elapsed_time <= 20:
                 correctTime = True
-                print("Hash was found in time and loop is ended, ", elapsed_time)
-                print(time.time() - TotalTime)
-                input("Press enter to continue")
+                print("Block has been mined in: ", elapsed_time)
+                input("Press enter to confirm and mine the block")
             elif elapsed_time < 10:
                 time_difference = 10 - elapsed_time
-                self.difficulty += int(time_difference / 2 + 3)
-                print(f"Hash was found too fast, increasing difficulty by {int(time_difference / 2 + 3)}. ",
+                self.difficulty += int(time_difference + 2)
+                print(f"Hash was found too fast, increasing difficulty",
                       elapsed_time)
             elif elapsed_time > 20:
                 time_difference = elapsed_time - 20
-                self.difficulty -= int(time_difference / 2 + 1)
-                print(f"Hash was found too slow, decreasing difficulty by {int(time_difference / 2 + 1)}. ",
+                self.difficulty -= int(time_difference + 1)
+                print(f"Hash was found too slow, decreasing difficulty",
                       elapsed_time)
 
-            # Check if the difficulty has already been mined
-            while self.difficulty in mined_difficulties:
-                self.difficulty += 5  # Increment difficulty by one
-                print(
-                    f"Difficulty {self.difficulty - 1} has already been mined. Incrementing difficulty to {self.difficulty}.")
-                continue
+            key = (self.leading_zeroes, self.difficulty)
 
-            mined_difficulties.append(self.difficulty)  # Add the mined difficulty to the set
+            # Check if this combination has been used before
+            while key in mined_difficulties:
+                self.difficulty += 1  # Increase difficulty by one if combination was already used
+
+            mined_difficulties.append(key)
         self.add_block(block)
 
     def is_valid(self):

@@ -16,27 +16,39 @@ class Block:
         self.invalidated_by = []
 
     def calculate_hash(self):
-        block_string = f"{self.timestamp}{self.transactions}{self.previous_hash}{self.nonce}".encode()
-        return hashlib.sha256(block_string).hexdigest()
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(bytes(str(self.timestamp), 'utf8'))
+        digest.update(bytes(str(self.transactions), 'utf8'))
+        digest.update(bytes(str(self.previous_hash), 'utf8'))
+        digest.update(bytes(str(self.nonce), 'utf8'))
+        return digest.finalize()
 
     def mine_block(self, leading_zeroes, difficulty):
-        self.nonce = 0
-        self.hash = self.calculate_hash()
-        startTime = time.time()
-        elapsed_time= 0
-        inRange = 10 - int(difficulty % 10)
-        print(leading_zeroes, " and in range is ", inRange)
-        if inRange == 10:
-            while elapsed_time < 30 and not self.hash.startswith('0' * leading_zeroes):
-                self.nonce += 1
-                self.hash = self.calculate_hash()
-                elapsed_time = time.time() - startTime
-        else:
-            while elapsed_time < 30 and not self.hash.startswith('0' * leading_zeroes) or not (self.hash[leading_zeroes].isdigit() and int(self.hash[leading_zeroes]) <= inRange):
-                self.nonce += 1
-                self.hash = self.calculate_hash()
-                elapsed_time = time.time() - startTime
-        print(f"Block mined: {self.hash}, with difficulty: {difficulty}")
+        print("Mining Block using the following difficulties. leading_zeroes: " + str(leading_zeroes), "difficulty: " + str(difficulty))
+        starttime = time.time()
+        elapsedTime = 0
+        elapsedNonse= 0
+        while elapsedTime < 25:
+            self.nonce += 1
+            self.hash = self.calculate_hash()
+            if elapsedTime > 10:
+                elapsedNonse += 1
+                if elapsedNonse % 500 == 0:
+                    elapsedNonse = 0
+                    difficulty -= 10
+                    if difficulty < 0:
+                        difficulty = 255
+                        leading_zeroes -= 1
+            if difficulty == 0:
+                if self.hash[:leading_zeroes] == bytes('0' * leading_zeroes, 'utf8'):
+                    print(self.hash, "final hash")
+                    return
+            else:
+                if self.hash[:leading_zeroes] == bytes('0' * leading_zeroes, 'utf8') and int(self.hash[leading_zeroes]) > difficulty:
+                    print(self.hash, "final hash ")
+                    return
+            elapsedTime = time.time() - starttime
+
 
     def serialize(self):
         return pickle.dumps(self)

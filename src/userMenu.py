@@ -169,11 +169,17 @@ def cancel_transaction(user):
     UserMenu(user)
 
 def mine_block(user):
-    # Get the last block from the blockchain
-    last_block = Blockchain.Blockchain().chain[-1]
+    blockchain = Blockchain.Blockchain()
+
+    # Check if the blockchain has at least one block
+    if blockchain.chain:
+        last_block = blockchain.chain[-1]
+        time_difference = (datetime.datetime.now() - last_block.timestamp).total_seconds()
+    else:
+        time_difference = 181
 
     # Check the timestamp difference
-    time_difference = (datetime.datetime.now() - last_block.timestamp).total_seconds()
+
     remaining_time = 180 - time_difference  # 180 seconds = 3 minutes
 
     # Check if there are at least 5 verified transactions in the pool

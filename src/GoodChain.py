@@ -133,6 +133,7 @@ def login():
     if not verify_password(user_data[4], password, user_data[2]):
         print("Incorrect username or password. Please try again.")
         input("Press Enter to continue...")
+        public_menu()
         return
 
     print("Login successful.")
@@ -220,14 +221,3 @@ if __name__ == "__main__":
     create_hashes()
     public_menu()
 
-# een user moet info krijgen over transactions die door zijn gegaan of transactions die zijn afgekeurd.
-# doe dit met confirmed balance vanuit de blockchain/ pending vanuit nog niet valid blokken en de pool / en dan actual is confirmed - pending
-#
-# aantal blokken in de blockchain en aantal transactions in de pool tonen aan de user
-# aangeven of een transactie gelukt is
-# een blok word afgekeurd als hij eerder 3 invalid heeft dan 3 valid en de user moet hierover geinformeerd worden
-# een creator van een blok mag het blok zelf niet valideren
-
-# moet het minen nog fixxen
-# select transactions moet ook min 5 en max 10 en ze pakken gebaseerd op type
-# zodra er is gemined moet er ook een minereward transactie aan worden gemaakt door de miner zelf

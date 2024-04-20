@@ -22,9 +22,10 @@ class Tx:
         self.inputs.append((from_address, amount + fee))  # Add fee to the input amount
 
     def set_type(self, type):
-        if type != 'reward' or type != 'minereward':
-            return False
-        self.type = type
+        if type == 'reward' or type == 'minereward':
+            self.type = type
+            return True
+        return False
 
     def add_output(self, to_address, amount):
         """

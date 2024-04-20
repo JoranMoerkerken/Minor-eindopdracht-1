@@ -245,9 +245,8 @@ def newBlocks(user):
 
 def UserMenu(user):
 
-    options = ["Transfer coins", "Explore the blockchain","Explore your pending transactions", "Search users", "Explore the transactionpool", "Cancel a pending transaction", "Mine a block", "logout"]
-    actions = [transfer_coin, explore_blockchain,explore_transactions, search_user, check_pool ,cancel_transaction, mine_block,logout ]
-
+    options = ["Transfer coins", "Mine a block", "Explore the blockchain", "Explore your pending transactions", "Explore the transactionpool","Search users", "Cancel a pending transaction", "logout"]
+    actions = [transfer_coin, mine_block, explore_blockchain, explore_transactions, check_pool, search_user, cancel_transaction, logout]
     is_valid, new_blocks_count = newBlocks(user)
 
     if not is_valid:
@@ -267,7 +266,7 @@ def UserMenu(user):
     message = (
         f"Welcome to Goodchain {user.username}!\n\n"
         f"your pending incoming balance = {pending_balance_incoming}\n"
-        f"your pending outgoing balance = -{pending_balance_outgoing}\n"
+        f"your pending outgoing balance = -{0 - pending_balance_outgoing}\n"
         f"your spendable balance = {actual_balance}\n\n"
         f"Amount of new blocks since your last login! {new_blocks_count}\n\n"
         f"Current amount of transactions in pool is: {len(TransactionPool.TransactionPool().get_transactions())}\n"

@@ -105,14 +105,18 @@ class Blockchain:
         tx_pool = TransactionPool.TransactionPool()
         transactions_from_pool = tx_pool.get_transactions()
 
-        # Iterate over a copy of the transactions to avoid modifying the original list
-        for tx in transactions_from_pool.copy():
-            if tx.verify():
-                selected_txs.append(tx)
-                tx_pool.remove_transaction(tx)
+        # Separate transactions into 'reward' and 'transaction' lists
+        reward_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'reward']
+        regular_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'transaction']
 
-        return selected_txs
+        # Select reward transactions first
+        selected_txs.extend(reward_txs[:min(9, len(reward_txs))])
 
+        # If we still need more transactions, select regular transactions
+        if len(selected_txs) < 9:
+            selected_txs.extend(regular_txs[:min(9 - len(selected_txs), len(regular_txs))])
+
+        return selected_txs[:9]  # Return at most 9 transactions
 
     def get_balance(self, public_key):
         """

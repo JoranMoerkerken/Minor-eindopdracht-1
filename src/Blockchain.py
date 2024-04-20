@@ -3,11 +3,13 @@ import pickle
 import Block
 import TransactionPool
 import GoodChain
+import time
 
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.difficulty = 2  # You can adjust this value
+        self.difficulty = 35  # You can adjust this value
+        self.leading_zeroes = 0
         self.load_from_file()
 
     def add_block(self, block):
@@ -16,7 +18,40 @@ class Blockchain:
 
     def mine_block(self, transactions):
         block = Block.Block(transactions, self.chain[-1].hash if self.chain else None)
-        block.mine_block(self.difficulty)
+        mined_difficulties = []
+        correctTime = False
+        TotalTime= time.time()
+        while not correctTime:
+            startTime = time.time()
+            block.mine_block(self.leading_zeroes, self.difficulty)
+            elapsed_time = time.time() - startTime
+
+            print(f"Elapsed time: {elapsed_time}")
+
+            if elapsed_time >= 10 and elapsed_time <= 20:
+                correctTime = True
+                print("Hash was found in time and loop is ended, ", elapsed_time)
+                print(time.time() - TotalTime)
+                input("Press enter to continue")
+            elif elapsed_time < 10:
+                time_difference = 10 - elapsed_time
+                self.difficulty += int(time_difference / 2 + 3)
+                print(f"Hash was found too fast, increasing difficulty by {int(time_difference / 2 + 3)}. ",
+                      elapsed_time)
+            elif elapsed_time > 20:
+                time_difference = elapsed_time - 20
+                self.difficulty -= int(time_difference / 2 + 1)
+                print(f"Hash was found too slow, decreasing difficulty by {int(time_difference / 2 + 1)}. ",
+                      elapsed_time)
+
+            # Check if the difficulty has already been mined
+            while self.difficulty in mined_difficulties:
+                self.difficulty += 5  # Increment difficulty by one
+                print(
+                    f"Difficulty {self.difficulty - 1} has already been mined. Incrementing difficulty to {self.difficulty}.")
+                continue
+
+            mined_difficulties.append(self.difficulty)  # Add the mined difficulty to the set
         self.add_block(block)
 
     def is_valid(self):

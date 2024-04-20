@@ -10,8 +10,8 @@ def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
 
-    blockchain.print_blockchain()
-    return
+    # blockchain.print_blockchain()
+    # return
     # Fetch all users
     users = database.fetch_all_users()
 

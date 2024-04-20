@@ -86,7 +86,8 @@ class TransactionPool:
                 sender = database.get_username(tx.inputs[0][0])
             receiver = database.get_username(tx.outputs[0][0])
             amount = tx.outputs[0][1] if tx.outputs else 50
-            print(f"Type: {tx.type}, Sender: {sender}, Receiver: {receiver}, Amount: {amount}")
+            fee = tx.inputs[0][1] - amount if tx.inputs else 0  # Calculate the fee
+            print(f"Type: {tx.type}, Sender: {sender}, Receiver: {receiver}, Amount: {amount}, Transaction Fee: {fee}")
         input("Press Enter to continue...")
 
     def get_balance(self, public_key):

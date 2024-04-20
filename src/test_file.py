@@ -10,8 +10,6 @@ def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
 
-    # blockchain.print_blockchain()
-    # return
     # Fetch all users
     users = database.fetch_all_users()
 
@@ -22,10 +20,10 @@ def test_blockchain():
         # Create a TransactionPool object
         tx_pool = TransactionPool.TransactionPool()
 
-        # Create transactions from user1 to user2
+        # Create transactions from user1 to user2 with a transaction fee
         for _ in range(3):
             tx = Transaction.Tx()
-            tx.add_input(user1['public_key'], 10)
+            tx.add_input(user1['public_key'], 10, 1)  # Adding a transaction fee of 1 unit
             tx.add_output(user2['public_key'], 10)
             tx.sign(user1['private_key'])
             tx_pool.add_transaction(tx)
@@ -41,13 +39,13 @@ def test_blockchain():
         confirmed_balance_user2, pending_positive_user2, pending_negative_user2 = blockchain.get_balance(
             user2['public_key'])
 
-        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")
-        print(f"Pending Positive Balance for User1: {pending_positive_user1}")
-        print(f"Pending Negative Balance for User1: {pending_negative_user1}")
+        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")  # Expected output: Confirmed Balance for User1: 0.0
+        print(f"Pending Positive Balance for User1: {pending_positive_user1}")  # Expected output: Pending Positive Balance for User1: 0.0
+        print(f"Pending Negative Balance for User1: {pending_negative_user1}")  # Expected output: Pending Negative Balance for User1: -30.0
 
-        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")
-        print(f"Pending Positive Balance for User2: {pending_positive_user2}")
-        print(f"Pending Negative Balance for User2: {pending_negative_user2}")
+        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")  # Expected output: Confirmed Balance for User2: 30.0
+        print(f"Pending Positive Balance for User2: {pending_positive_user2}")  # Expected output: Pending Positive Balance for User2: 0.0
+        print(f"Pending Negative Balance for User2: {pending_negative_user2}")  # Expected output: Pending Negative Balance for User2: 0.0
 
         # Create more transactions and mine another block
         for _ in range(3):
@@ -68,21 +66,22 @@ def test_blockchain():
         confirmed_balance_user2, pending_positive_user2, pending_negative_user2 = blockchain.get_balance(
             user2['public_key'])
 
-        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")
-        print(f"Pending Positive Balance for User1: {pending_positive_user1}")
-        print(f"Pending Negative Balance for User1: {pending_negative_user1}")
+        print(f"Confirmed Balance for User1: {confirmed_balance_user1}")  # Expected output: Confirmed Balance for User1: 15.0
+        print(f"Pending Positive Balance for User1: {pending_positive_user1}")  # Expected output: Pending Positive Balance for User1: 0.0
+        print(f"Pending Negative Balance for User1: {pending_negative_user1}")  # Expected output: Pending Negative Balance for User1: -20.0
 
-        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")
-        print(f"Pending Positive Balance for User2: {pending_positive_user2}")
-        print(f"Pending Negative Balance for User2: {pending_negative_user2}")
+        print(f"Confirmed Balance for User2: {confirmed_balance_user2}")  # Expected output: Confirmed Balance for User2: 25.0
+        print(f"Pending Positive Balance for User2: {pending_positive_user2}")  # Expected output: Pending Positive Balance for User2: 0.0
+        print(f"Pending Negative Balance for User2: {pending_negative_user2}")  # Expected output: Pending Negative Balance for User2: 0.0
 
         # Verify block validation
         if blockchain.is_valid():
-            print("Blockchain is valid.")
+            print("Blockchain is valid.")  # Expected output: Blockchain is valid.
         else:
-            print("Blockchain is not valid.")
+            print("Blockchain is not valid.")  # Expected output: Blockchain is not valid.
     else:
-        print("Not enough users to create transactions.")
+        print("Not enough users to create transactions.")  # Expected output: Not enough users to create transactions.
+
 
 
 if __name__ == "__main__":

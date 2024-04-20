@@ -10,15 +10,16 @@ class Tx:
         self.type = type
         self.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    def add_input(self, from_address, amount):
+    def add_input(self, from_address, amount, fee=0):
         """
         Add an input to the transaction.
 
         Args:
         - from_address (str): Public key of the sender.
         - amount (float): Amount to be sent.
+        - fee (float): Transaction fee to be deducted from the sender's balance.
         """
-        self.inputs.append((from_address, amount))
+        self.inputs.append((from_address, amount + fee))  # Add fee to the input amount
 
     def set_type(self, type):
         if type != 'reward' or type != 'minereward':

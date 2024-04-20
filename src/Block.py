@@ -33,7 +33,7 @@ class Block:
             self.hash = self.calculate_hash()
             if elapsedTime > 10:
                 elapsedNonse += 1
-                if elapsedNonse % 500 == 0:
+                if elapsedNonse % 4000 == 0:
                     elapsedNonse = 0
                     difficulty -= 10
                     if difficulty < 0:

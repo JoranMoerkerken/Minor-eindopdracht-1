@@ -115,7 +115,17 @@ class TransactionPool:
 
         return positive_balance, negative_balance
 
-    def verify_pool(self, actual_balance, user_public_key):
+    def verify_pool(self):
+        """
+        Verify all transactions in the transaction pool.
+        Remove any transactions that fail verification.
+        """
+        valid_transactions = []
+
+        for tx in self.transactions:
+            if tx.verify():
+                valid_transactions.append(tx)
+    def verify_pool_user(self, actual_balance, user_public_key):
         """
         Verify all transactions in the transaction pool.
         Remove any transactions that fail verification or would make the actual_balance go below 0.
@@ -151,6 +161,8 @@ class TransactionPool:
                     flag = False
                     continue
             else:
+                print(f"Transaction {tx.time} removed due to invalid signature.")
+                input("Press Enter to continue...")
                 flag = False
 
         self.transactions = valid_transactions

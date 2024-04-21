@@ -63,8 +63,8 @@ def transfer_coin(balance, user):
     # Add transaction to the transaction pool
     transaction_pool = TransactionPool.TransactionPool()
     transaction_pool.add_transaction(tx)
-
-    if transaction_pool.verify_pool(balance, user.publicKey):
+    # here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
+    if transaction_pool.verify_pool_user(balance, user.publicKey) and transaction_pool.verify_pool():
         pass
     else:
         print("an invalid transaction was found in the transactionpool, please try again.")
@@ -226,7 +226,9 @@ def mine_block(balance, user):
 
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
-    tx_pool.verify_pool(balance, user.publicKey)
+    #here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
+    tx_pool.verify_pool_user(actual_balance, user.publicKey)
+    tx_pool.verify_pool()
     transactions_count = len(tx_pool.get_transactions())
 
     if time_difference > 180:
@@ -349,7 +351,9 @@ def UserMenu(user):
     actual_balance = confirmed_balance - pending_balance_outgoing
 
     pool = TransactionPool.TransactionPool()
-    pool.verify_pool(actual_balance, user.publicKey)
+    #here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
+    pool.verify_pool_user(actual_balance, user.publicKey)
+    pool.verify_pool()
 
     # Get the current number of transactions in the blockchain chain
     current_transactions_count = sum(len(block.transactions) for block in blockchain.chain)

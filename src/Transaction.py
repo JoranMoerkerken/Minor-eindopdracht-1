@@ -91,9 +91,17 @@ class Tx:
         """
         message = ""
         for address, amount in self.inputs:
-            message += address + str(amount)
+            if isinstance(address, bytes):
+                address_str = address.decode('utf-8')
+            else:
+                address_str = address
+            message += address_str + str(amount)
         for address, amount in self.outputs:
-            message += address + str(amount)
+            if isinstance(address, bytes):
+                address_str = address.decode('utf-8')
+            else:
+                address_str = address
+            message += address_str + str(amount)
         return message
 
     def __repr__(self):

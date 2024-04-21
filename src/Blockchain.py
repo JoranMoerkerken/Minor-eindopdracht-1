@@ -18,6 +18,27 @@ class Blockchain:
         self.chain.append(block)
         self.save_to_file()
 
+    def calculate_fee_for_transactions(self, txs):
+        """
+        Calculate the total transaction fee for a list of transactions.
+
+        Args:
+        - txs (list): List of Transaction objects.
+
+        Returns:
+        - float: Total transaction fee amount.
+        """
+        total_fee = 0.0
+
+        for tx in txs:
+            total_input = sum(amount for _, amount in tx.inputs)
+            total_output = sum(amount for _, amount in tx.outputs)
+
+            fee = total_input - total_output
+            total_fee += fee
+
+        return total_fee
+
     def mine_block(self, transactions, user):
         block = Block.Block(transactions, self.chain[-1].hash if self.chain else None, self.chain[-1].id + 1 if self.chain else 0, user)
         print("Mining has started! Please wait...")
@@ -37,7 +58,10 @@ class Blockchain:
 
             if elapsed_time >= 10 and elapsed_time <= 20:
                 correctTime = True
+                Reward = self.calculate_fee_for_transactions(transactions)
                 print("Block has been mined in: ", elapsed_time)
+                print("By mining this block you will receive: ", Reward, "coins. \nthis reward will be given after the block has been verified three times by other users.")
+                print("after this a reward is made for you for mining a verified block. this reward is 50 coins and will be granted if the next block is mined")
                 input("Press enter to confirm and mine the block")
             elif elapsed_time < 10:
                 time_difference = 10 - elapsed_time

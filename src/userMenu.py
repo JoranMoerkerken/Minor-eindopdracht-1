@@ -226,7 +226,7 @@ def mine_block(balance, user):
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
     #here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
-    tx_pool.verify_pool_user(actual_balance, user.publicKey)
+    tx_pool.verify_pool_user(balance, user.publicKey)
     tx_pool.verify_pool()
     transactions_count = len(tx_pool.get_transactions())
 

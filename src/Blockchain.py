@@ -206,8 +206,6 @@ class Blockchain:
 
         return confirmed_positive_balance, pending_positive_balance, pending_negative_balance
 
-    import hashlib
-
     def print_blockchain(self):
         if len(self.chain) == 0:
             print("The Chain is empty")

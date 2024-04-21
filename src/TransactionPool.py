@@ -87,7 +87,7 @@ class TransactionPool:
                 sender = database.get_username(tx.inputs[0][0])
             receiver = database.get_username(tx.outputs[0][0])
             amount = tx.outputs[0][1] if tx.outputs else 50
-            fee = tx.inputs[0][1] - amount if tx.inputs else 0  # Calculate the fee
+            fee = tx.inputs[0][1] - amount if tx.inputs else 0
             print(f"Type: {tx.type}, Sender: {sender}, Receiver: {receiver}, Amount: {amount}, Transaction Fee: {fee}")
         input("Press Enter to continue...")
 
@@ -141,26 +141,21 @@ class TransactionPool:
         """
         invalid_transactions = []
         flag = True
-        # Sort transactions by their creation time
+
         sorted_transactions = sorted(self.transactions, key=lambda tx: tx.time)
 
         for tx in sorted_transactions:
             if any(addr == user_public_key for addr, _ in tx.inputs):
                 if tx.verify():
-                     # Calculate potential new actual_balance after processing the transaction
                     new_actual_balance = actual_balance
 
-                    # Calculate the total input and output amounts relevant to the user for the transaction
                     total_input = sum(amount for addr, amount in tx.inputs if addr == user_public_key)
                     total_output = sum(amount for addr, amount in tx.outputs if addr == user_public_key)
 
-                    # Check if the transaction is valid based on the actual_balance
                     if new_actual_balance - total_input + total_output >= 0:
-                        # If the transaction is valid, add it to the list of valid transactions
-                        # Update the new actual_balance
                         new_actual_balance = new_actual_balance - total_input + total_output
                     else:
-                        # If the transaction would make the actual_balance go below 0, skip it
+
                         print(f"Transaction {tx.time} removed due to insufficient balance.")
                         input("Press Enter to continue...")
                         invalid_transactions.append(tx)

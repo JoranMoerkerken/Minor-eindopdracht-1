@@ -29,13 +29,11 @@ def generate_keys():
     return private_key, pbc_ser
 
 def verify_password(public_key_pem, password, signature):
-    # Load the PEM-formatted public key string to an RSAPublicKey object
     public_key = serialization.load_pem_public_key(
         public_key_pem.encode(),
     )
 
     try:
-        # Verify the signature
         public_key.verify(
             signature,
             password.encode(),
@@ -60,7 +58,6 @@ def sign_up():
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    # Hash the password using the private key
     hashed_password = private_key.sign(
         password.encode(),
         padding.PSS(
@@ -70,18 +67,15 @@ def sign_up():
         hashes.SHA256()
     )
 
-    # Connect to the SQLite database
     db_path = "../data/user_database.db"
     if not os.path.exists("../data"):
         os.makedirs("../data")
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    # Create table if it doesn't exist
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password BLOB, private_key TEXT, public_key TEXT)''')
 
-    # Check if username already exists
     c.execute("SELECT * FROM users WHERE username=?", (username,))
     existing_user = c.fetchone()
     if existing_user:
@@ -90,16 +84,13 @@ def sign_up():
         sign_up()
         return
 
-    # Insert user data into the database
     c.execute("INSERT INTO users (username, password, private_key, public_key) VALUES (?, ?, ?, ?)",
               (username, hashed_password, private_key_str.decode(), public_key.decode()))
     conn.commit()
 
-    # Close database connection
     conn.close()
     create_hashes()
 
-    #add sign up reward to pool
     tx_pool = TransactionPool.TransactionPool()
     tx1 = Transaction.Tx()
     tx1.set_type('reward')
@@ -115,7 +106,6 @@ def login():
     password = input("Enter your password: ")
 
     user_data = database.fetch_user_data(username)
-    # Verify the password using the public key
     if not verify_password(user_data[4], password, user_data[2]):
         print("Incorrect username or password. Please try again.")
         input("Press Enter to continue...")
@@ -154,7 +144,6 @@ def check_file_integrity():
 
     for file_path in files_to_check:
         if os.path.exists(file_path):
-            # Calculate the hash of the file
             current_hash = hashlib.sha256()
             with open(file_path, "rb") as file:
                 for chunk in iter(lambda: file.read(4096), b""):
@@ -162,7 +151,6 @@ def check_file_integrity():
 
             current_hash_hex = current_hash.hexdigest()
 
-            # Compare the hashes
             if file_path in stored_hashes:
                 if current_hash_hex == stored_hashes[file_path]:
                     pass
@@ -188,7 +176,6 @@ def create_hashes():
 
     for file_path in files_to_hash:
         if os.path.exists(file_path):
-            # Calculate the hash of the file
             current_hash = hashlib.sha256()
             with open(file_path, "rb") as file:
                 for chunk in iter(lambda: file.read(4096), b""):
@@ -198,7 +185,6 @@ def create_hashes():
 
             file_hashes[file_path] = current_hash_hex
 
-    # Write the hashes to the hash file
     with open(hash_file_path, "w") as hash_file:
         for file_path, file_hash in file_hashes.items():
             hash_file.write(f"{file_path}:{file_hash}\n")
@@ -206,14 +192,13 @@ def create_hashes():
 
 def public_menu():
     options = ["Login", "Sign up", "Explore the blockchain","Explore the transactionpool", "Exit"]
-    actions = [login, sign_up, explore_blockchain,check_pool, exit_program]  # Define your action functions here
+    actions = [login, sign_up, explore_blockchain,check_pool, exit_program]
 
     index = menuMaker.select_menu_option(None, options)
     if index < len(actions):
         actions[index]()
 
 if __name__ == "__main__":
-    # test_file.test_transaction_pool()
     check_file_integrity()
     create_hashes()
     public_menu()

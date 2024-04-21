@@ -16,7 +16,7 @@ import userMenu
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.difficulty = 110  # You can adjust this value
+        self.difficulty = 110
         self.leading_zeroes = 3
         self.load_from_file()
 
@@ -82,9 +82,8 @@ class Blockchain:
 
             key = (self.leading_zeroes, self.difficulty)
 
-            # Check if this combination has been used before
             while key in mined_difficulties:
-                self.difficulty += 1  # Increase difficulty by one if combination was already used
+                self.difficulty += 1
 
             mined_difficulties.append(key)
         self.add_block(block)
@@ -148,11 +147,9 @@ class Blockchain:
         # Select 'minereward' transactions first
         selected_txs.extend(minereward_txs[:min(1, len(minereward_txs))])
 
-        # If we still need more transactions, select 'reward' transactions
         if len(selected_txs) < 10:
             selected_txs.extend(reward_txs[:min(10 - len(selected_txs), len(reward_txs))])
 
-        # If we still need more transactions, select 'regular' transactions
         if len(selected_txs) < 10:
             selected_txs.extend(regular_txs[:min(10 - len(selected_txs), len(regular_txs))])
 

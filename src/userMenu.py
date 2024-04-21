@@ -262,7 +262,7 @@ def mine_block(balance, user):
 
     # Check the timestamp difference
 
-    remaining_time = 180 - time_difference  # 180 seconds = 3 minutes
+    remaining_time = 180 - time_difference
 
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
@@ -328,7 +328,6 @@ def newBlocks(user):
                         tx_pool.add_transaction(minereward_tx)
         else:
             previous_block = blockchain.chain[i - 1]
-            ##########
 
             if current_block.hash != current_block.calculate_hash():
                 if user.username not in current_block.invalidated_by:
@@ -395,7 +394,7 @@ def UserMenu(user):
     actual_balance = confirmed_balance - pending_balance_outgoing
 
     pool = TransactionPool.TransactionPool()
-    #here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
+
     pool.verify_pool_user(actual_balance, user.publicKey)
     pool.verify_pool()
 

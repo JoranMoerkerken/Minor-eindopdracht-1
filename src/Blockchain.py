@@ -104,24 +104,27 @@ class Blockchain:
         tx_pool = TransactionPool.TransactionPool()
         transactions_from_pool = tx_pool.get_transactions()
 
-        # Separate transactions into 'reward' and 'transaction' lists
+        # Separate transactions into 'minereward', 'reward', and 'transaction' lists
+        minereward_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'minereward']
         reward_txs = [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'reward']
-
-        # Sort 'transaction' transactions by transaction fee in descending order
         regular_txs = sorted(
             [tx for tx in transactions_from_pool if tx.verify() and tx.type == 'transaction'],
             key=lambda tx: tx.inputs[0][1] - (tx.outputs[0][1] if tx.outputs else 50),
             reverse=True
         )
 
-        # Select reward transactions first
-        selected_txs.extend(reward_txs[:min(9, len(reward_txs))])
+        # Select 'minereward' transactions first
+        selected_txs.extend(minereward_txs[:min(1, len(minereward_txs))])
 
-        # If we still need more transactions, select regular transactions
-        if len(selected_txs) < 9:
-            selected_txs.extend(regular_txs[:min(9 - len(selected_txs), len(regular_txs))])
+        # If we still need more transactions, select 'reward' transactions
+        if len(selected_txs) < 10:
+            selected_txs.extend(reward_txs[:min(9 - len(selected_txs), len(reward_txs))])
 
-        return selected_txs[:9]  # Return at most 9 transactions
+        # If we still need more transactions, select 'regular' transactions
+        if len(selected_txs) < 10:
+            selected_txs.extend(regular_txs[:min(10 - len(selected_txs), len(regular_txs))])
+
+        return selected_txs[:10]  # Return at most 10 transactions
 
     def get_balance(self, public_key):
         """

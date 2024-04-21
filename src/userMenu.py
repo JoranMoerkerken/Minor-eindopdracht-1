@@ -24,12 +24,13 @@ def transfer_coin(user):
     # Input the amount to transfer
     try:
         amount = float(input("Enter the amount to transfer. example inputs are 5 or 5.0:\n"))
+        fee = float(input("Enter the mining fee, the higher it is the more likely it is a miner will pick it up. example inputs are 5 or 5.0:\n"))
     except ValueError:
         print("Invalid amount. Please enter a valid number.")
         input("Press Enter to try agian...")
         transfer_coin(user)
         return
-    if amount < 0:
+    if amount < 0 or fee < 0:
         print("Invalid amount. Please enter a valid number.")
         input("Press Enter to try agian...")
         transfer_coin(user)
@@ -40,7 +41,7 @@ def transfer_coin(user):
 
     # Create a new transaction
     tx = Transaction.Tx()
-    tx.add_input(user.publicKey, amount)
+    tx.add_input(user.publicKey, amount, fee)
     tx.add_output(receiver[4], amount)
     tx.sign(user.privateKey)
 

@@ -10,19 +10,13 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.exceptions import InvalidSignature
 
 # Local application imports
-import Block
 import Blockchain
-import GoodChain
 import Transaction
 import TransactionPool
 import User
 import database
 import menuMaker
-import test_file
 import userMenu
-
-
-
 
 def generate_keys():
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -33,18 +27,6 @@ def generate_keys():
         format=serialization.PublicFormat.SubjectPublicKeyInfo)
 
     return private_key, pbc_ser
-
-def sign_password(private_key, password):
-    signature = private_key.sign(
-        password.encode(),
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
-        hashes.SHA256()
-    )
-
-    return signature
 
 def verify_password(public_key_pem, password, signature):
     # Load the PEM-formatted public key string to an RSAPublicKey object
@@ -144,7 +126,6 @@ def login():
     input("Press Enter to continue...")
     userMenu.UserMenu(User.User(user_data[1], user_data[2], user_data[3], user_data[4]))
 
-
 def explore_blockchain():
     Blockchain.Blockchain().print_blockchain()
     public_menu()
@@ -152,7 +133,6 @@ def explore_blockchain():
 def check_pool():
     TransactionPool.TransactionPool().print_transactions()
     public_menu()
-
 
 def exit_program():
     print("Exiting...")

@@ -10,14 +10,18 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.exceptions import InvalidSignature
 
 # Local application imports
-import menuMaker
-import User
-import userMenu
-import database
+import Block
+import Blockchain
+import GoodChain
 import Transaction
 import TransactionPool
+import User
+import database
+import menuMaker
 import test_file
-import Blockchain
+import userMenu
+
+
 
 
 def generate_keys():

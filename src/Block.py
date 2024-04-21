@@ -2,8 +2,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import pickle
 import datetime
-import hashlib
 import time
+
 
 class Block:
     def __init__(self, transactions, previous_hash, Id, user):

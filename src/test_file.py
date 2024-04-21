@@ -4,7 +4,6 @@ import Transaction
 import TransactionPool
 import database
 import Blockchain
-import GoodChain
 import User
 
 def test_blockchain():

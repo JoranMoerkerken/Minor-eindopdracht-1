@@ -1,11 +1,14 @@
-import menuMaker, GoodChain
-import os
-import sqlite3
+import Blockchain
 import Transaction
 import TransactionPool
-import Blockchain
+import GoodChain
 import database
 import datetime
+import menuMaker
+import os
+import sqlite3
+
+
 def transfer_coin(user):
     # Fetch all users' usernames
     users = database.fetch_all_users()
@@ -244,6 +247,15 @@ def newBlocks(user):
 
         if i == 0:
             if current_block.hash != current_block.calculate_hash():
+                if user.username not in current_block.invalidated_by:
+                    current_block.invalidated_by.append(user.username)
+                    if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
+                        # Remove the invalid block from the blockchain
+                        blockchain.chain.pop(i)
+                        # Add transactions from the invalid block back to the transaction pool
+                        tx_pool = TransactionPool.TransactionPool()
+                        for tx in current_block.transactions:
+                            tx_pool.add_transaction(tx)
                 return False, newBlocks
             elif user.username not in current_block.validated_By and user.username not in current_block.Creator:
                     current_block.validated_By.append(user.username)
@@ -264,16 +276,21 @@ def newBlocks(user):
             ##########
 
             if current_block.hash != current_block.calculate_hash():
-                if user not in current_block.invalidated_by:
-                    current_block.invalidated_by.append(user)
+                if user.username not in current_block.invalidated_by:
+                    current_block.invalidated_by.append(user.username)
                     if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
+                        # Remove the invalid block from the blockchain
                         blockchain.chain.pop(i)
+                        # Add transactions from the invalid block back to the transaction pool
+                        tx_pool = TransactionPool.TransactionPool()
+                        for tx in current_block.transactions:
+                            tx_pool.add_transaction(tx)
 
                 return False, newBlocks
 
             if current_block.previous_hash != previous_block.hash:
-                if user not in current_block.invalidated_by and user.username not in current_block.Creator:
-                    current_block.invalidated_by.append(user)
+                if user.username not in current_block.invalidated_by and user.username not in current_block.Creator:
+                    current_block.invalidated_by.append(user.username)
                     if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
                         blockchain.chain.pop(i)
                 return False, newBlocks
@@ -305,7 +322,7 @@ def UserMenu(user):
     is_valid, new_blocks_count = newBlocks(user)
 
     if not is_valid:
-        print("Blockchain validation failed.")
+        print("Blockchain validation failed. A block has been removed")
         return False
 
     blockchain = Blockchain.Blockchain()

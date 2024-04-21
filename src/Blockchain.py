@@ -1,12 +1,18 @@
+# Standard library imports
 import os
-import pickle
-import Block
-import TransactionPool
-import GoodChain
-import time
-import userMenu
 import hashlib
+import pickle
+import time
+
+# Third-party imports
+
+# Local application imports
+import Block
+import GoodChain
+import TransactionPool
 import database
+import userMenu
+
 class Blockchain:
     def __init__(self):
         self.chain = []

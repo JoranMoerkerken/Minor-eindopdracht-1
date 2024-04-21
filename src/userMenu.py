@@ -40,7 +40,7 @@ def transfer_coin(balance, user):
         input("Press Enter to try agian...")
         UserMenu(user)
         return
-    elif amount > balance:
+    elif amount + fee > balance:
         print("You are trying to send more then you currently have. Please enter a valid number.")
         input("Press Enter to try agian...")
         UserMenu(user)

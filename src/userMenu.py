@@ -46,7 +46,6 @@ def transfer_coin(balance, user):
         UserMenu(user)
         return
 
-    #to lazy to match selected username to users
     receiver = database.fetch_user_data(selected_username)
 
     # Create a new transaction

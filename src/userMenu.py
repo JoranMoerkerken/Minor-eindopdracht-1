@@ -278,7 +278,7 @@ def newBlocks(user):
 
 def UserMenu(user):
 
-    options = ["Transfer coins", "Mine a block", "Explore the blockchain", "Explore your pending transactions", "Explore the transactionpool","Search users", "Cancel a pending transaction", "logout"]
+    options = ["Transfer coins", "Mine a block", "Explore the blockchain", "Explore your transaction history", "Explore the transactionpool","Search users", "Cancel a pending transaction", "logout"]
     actions = [transfer_coin, mine_block, explore_blockchain, explore_transactions, check_pool, search_user, cancel_transaction, logout]
     is_valid, new_blocks_count = newBlocks(user)
 

@@ -199,8 +199,10 @@ def mine_block(user):
     if blockchain.chain:
         last_block = blockchain.chain[-1]
         time_difference = (datetime.datetime.now() - last_block.timestamp).total_seconds()
+        validatedAmount = len(last_block.validated_By)
     else:
         time_difference = 181
+        validatedAmount = 3
 
     # Check the timestamp difference
 
@@ -209,13 +211,17 @@ def mine_block(user):
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
     tx_pool.verify_pool()
-    transactions = blockchain.select_transactions()
-    transactions_count = len(transactions)
+    transactions_count = len(tx_pool.get_transactions())
 
     if time_difference > 180:
         if transactions_count >= 5:
-            blockchain.mine_block(transactions, user)
-            pass
+            if validatedAmount >= 3:
+                transactions = blockchain.select_transactions()
+                blockchain.mine_block(transactions, user)
+            else:
+                print(f"The last block should at least be validated three times. current count: {validatedAmount}")
+                input("Press Enter to continue...")
+                UserMenu(user)
         else:
             print(f"There should be at least 5 verified transactions in the pool. Current count: {transactions_count}.")
             input("Press Enter to continue...")
@@ -238,7 +244,7 @@ def newBlocks(user):
         if i == 0:
             if current_block.hash != current_block.calculate_hash():
                 return False, newBlocks
-            elif user.username not in current_block.validated_By:
+            elif user.username not in current_block.validated_By and user.username not in current_block.Creator:
                     current_block.validated_By.append(user.username)
                     newBlocks += 1
         else:
@@ -259,7 +265,6 @@ def newBlocks(user):
                     if len(current_block.invalidated_by) >= 3 and len(current_block.validated_By) < 3:
                         blockchain.chain.pop(i)
                 return False, newBlocks
-
             # Check if the user is already in the validated_By list
             if user.username not in current_block.validated_By and user.username not in current_block.Creator:
                 current_block.validated_By.append(user.username)
@@ -268,8 +273,14 @@ def newBlocks(user):
                 # Check if the block has been validated three times
                 if len(current_block.validated_By) == 3:
                     # Add minereward to the mining pool
+                    print("test")
                     tx_pool = TransactionPool.TransactionPool()
-                    minereward_tx = TransactionPool.Transaction('minereward', user.public_key, 50)
+                    minereward_tx = Transaction.Tx()
+                    creator = database.fetch_user_data(current_block.Creator[0])
+
+                    minereward_tx.add_output(creator[4], 50)
+                    minereward_tx.set_type('minereward')
+                    minereward_tx.verify()
                     tx_pool.add_transaction(minereward_tx)
 
     blockchain.save_to_file()

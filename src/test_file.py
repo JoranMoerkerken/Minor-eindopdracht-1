@@ -11,8 +11,6 @@ def test_blockchain():
     # Create a Blockchain object
     blockchain = Blockchain.Blockchain()
 
-    blockchain.print_blockchain()
-    return
     # Fetch all users
     users = database.fetch_all_users()
 
@@ -31,6 +29,7 @@ def test_blockchain():
             tx.sign(user1['private_key'])
             tx_pool.add_transaction(tx)
 
+        return
         # Mine a block
         transactions = blockchain.select_transactions()
         tx_pool.load_from_file()

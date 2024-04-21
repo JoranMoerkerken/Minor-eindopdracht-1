@@ -75,6 +75,7 @@ class TransactionPool:
     def print_transactions(self):
         if not self.transactions:
             print("No transactions in the pool.")
+            input("Press Enter to continue...")
             return
 
         print("Transaction Pool:")

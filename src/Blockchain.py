@@ -116,20 +116,18 @@ class Blockchain:
 
         # Select 'minereward' transactions first
         selected_txs.extend(minereward_txs[:min(1, len(minereward_txs))])
-        for tx in minereward_txs[:min(1, len(minereward_txs))]:
-            tx_pool.remove_transaction(tx)
 
         # If we still need more transactions, select 'reward' transactions
         if len(selected_txs) < 10:
-            selected_txs.extend(reward_txs[:min(9 - len(selected_txs), len(reward_txs))])
-            for tx in reward_txs[:min(9 - len(selected_txs), len(reward_txs))]:
-                tx_pool.remove_transaction(tx)
+            selected_txs.extend(reward_txs[:min(10 - len(selected_txs), len(reward_txs))])
 
         # If we still need more transactions, select 'regular' transactions
         if len(selected_txs) < 10:
             selected_txs.extend(regular_txs[:min(10 - len(selected_txs), len(regular_txs))])
-            for tx in regular_txs[:min(10 - len(selected_txs), len(regular_txs))]:
-                tx_pool.remove_transaction(tx)
+
+        # Remove selected transactions from the transaction pool
+        for tx in selected_txs:
+            tx_pool.remove_transaction(tx)
 
         return selected_txs[:10]  # Return at most 10 transactions
 

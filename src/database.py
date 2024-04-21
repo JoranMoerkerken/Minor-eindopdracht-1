@@ -82,6 +82,23 @@ def get_username(public_key):
 
     return result[0] if result else "Unknown"
 
+def update_user_password(username, new_password_hash, db_path="../data/user_database.db"):
+    """
+    Update the user's password in the database.
+    """
+    if not os.path.exists("../data"):
+        return False
+
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("UPDATE users SET password=? WHERE username=?", (new_password_hash, username))
+    conn.commit()
+
+    conn.close()
+
+    return True
+
 
 
 

@@ -1,3 +1,6 @@
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+
 import Blockchain
 import Transaction
 import TransactionPool
@@ -82,10 +85,12 @@ def change_password(user):
     print(f"Greetings {user.username}. Inside this function, you can change your password!")
 
     current_password = input("Enter your current password: ")
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Verify current password
-    if not GoodChain.verify_password(user.publicKey, current_password, user.password_hash):
-        print("Incorrect password.")
+    if not GoodChain.verify_password(user.publicKey, current_password, user.password):
+        print("Incorrect password. Please try again.")
+        input("Press Enter to continue...")
+        UserMenu(user)
         return
 
     new_password = input("Enter your new password: ")
@@ -94,13 +99,22 @@ def change_password(user):
     # Check if the new passwords match
     if new_password != confirm_new_password:
         print("Passwords do not match.")
+        input("Press Enter to continue...")
+        UserMenu(user)
         return
 
     # Hash and save the new password
-    new_password_hash = GoodChain.hash_password(user.publicKey, new_password)
+    new_password_hash = user.privateKey.sign(
+        new_password.encode(),
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
+        hashes.SHA256()
+    )
     database.update_user_password(user.username, new_password_hash)
     print("Password changed successfully!")
-
+    GoodChain.create_hashes()
     input("Press Enter to continue...")
     UserMenu(user)
 
@@ -388,6 +402,7 @@ def UserMenu(user):
     # Get the current number of transactions in the blockchain chain
     current_transactions_count = sum(len(block.transactions) for block in blockchain.chain)
 
+    #next assignment i need to make a notification class. this is awfull
     message = (
         f"Welcome to Goodchain {user.username}!\n"
         f"===============================================================================\n"

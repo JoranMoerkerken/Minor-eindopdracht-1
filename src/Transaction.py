@@ -1,6 +1,6 @@
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
-import datetime
+from datetime import datetime
 
 class Tx:
     def __init__(self, type='transaction'):

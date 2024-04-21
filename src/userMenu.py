@@ -9,7 +9,7 @@ import os
 import sqlite3
 
 
-def transfer_coin(user):
+def transfer_coin(balance, user):
     # Fetch all users' usernames
     users = database.fetch_all_users()
     allUserNames = [names['username'] for names in users if names['username'] != user.username]
@@ -27,6 +27,7 @@ def transfer_coin(user):
 
     # Input the amount to transfer
     try:
+        print(f"your current balance is: ", balance)
         amount = float(input("Enter the amount to transfer. example inputs are 5 or 5.0:\n"))
         fee = float(input("Enter the mining fee, the higher it is the more likely it is a miner will pick it up. example inputs are 5 or 5.0:\n"))
     except ValueError:
@@ -34,8 +35,13 @@ def transfer_coin(user):
         input("Press Enter to try agian...")
         transfer_coin(user)
         return
-    if amount < 0 or fee < 0:
+    if amount < 0 or fee < 0 or amount > balance:
         print("Invalid amount. Please enter a valid number.")
+        input("Press Enter to try agian...")
+        transfer_coin(user)
+        return
+    elif amount > balance:
+        print("You are trying to send more then you currently have. Please enter a valid number.")
         input("Press Enter to try agian...")
         transfer_coin(user)
         return
@@ -57,6 +63,13 @@ def transfer_coin(user):
     # Add transaction to the transaction pool
     transaction_pool = TransactionPool.TransactionPool()
     transaction_pool.add_transaction(tx)
+
+    if transaction_pool.verify_pool(balance, user.publicKey):
+        pass
+    else:
+        print("an invalid transaction was found in the transactionpool, please try again.")
+        UserMenu(user)
+        return
 
     print(f"Ur transaction is now pending. {amount} coins to {selected_username}.")
     input("Press Enter to continue...")
@@ -354,7 +367,8 @@ def UserMenu(user):
     )
 
     index = menuMaker.select_menu_option(message, options)
-    if index == 1:
+    if index == 1 or index == 0:
         actions[index](actual_balance, user)
+        return
     actions[index](user)
 

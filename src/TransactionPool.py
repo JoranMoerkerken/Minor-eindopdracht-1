@@ -125,7 +125,7 @@ class TransactionPool:
         - actual_balance (float): The actual balance of the user.
         """
         valid_transactions = []
-
+        flag = True
         # Sort transactions by their creation time
         sorted_transactions = sorted(self.transactions, key=lambda tx: tx.time)
 
@@ -148,9 +148,13 @@ class TransactionPool:
                     # If the transaction would make the actual_balance go below 0, skip it
                     print(f"Transaction {tx.time} removed due to insufficient balance.")
                     input("Press Enter to continue...")
+                    flag = False
                     continue
+            else:
+                flag = False
 
         self.transactions = valid_transactions
         self.save_to_file()
+        return flag
 
 

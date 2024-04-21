@@ -24,8 +24,8 @@ def test_blockchain():
         # Create transactions from user1 to user2 with a transaction fee
         for _ in range(3):
             tx = Transaction.Tx()
-            tx.add_input(user1['public_key'], 10, 1)  # Adding a transaction fee of 1 unit
-            tx.add_output(user2['public_key'], 10)
+            tx.add_input(user1['public_key'], 0, 1000)  # Adding a transaction fee of 1 unit
+            tx.add_output(user2['public_key'], 0)
             tx.sign(user1['private_key'])
             tx_pool.add_transaction(tx)
 

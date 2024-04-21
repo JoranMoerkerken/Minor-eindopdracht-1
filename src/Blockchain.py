@@ -6,6 +6,7 @@ import GoodChain
 import time
 import userMenu
 import hashlib
+import database
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -148,7 +149,18 @@ class Blockchain:
         pending_negative_balance = 0.0
 
         for block in self.chain:
+            creator = False
+            if block.Creator[0] == database.get_username(public_key):
+                creator = True
             for tx in block.transactions:
+                fee = sum(amount for _, amount in tx.inputs) - sum(amount for _, amount in tx.outputs)
+                if len(block.validated_By) >= 3:
+                    if creator:
+                        confirmed_positive_balance += fee
+                else:
+                    if creator:
+                        pending_positive_balance += fee
+
                 for address, amount in tx.inputs:
                     if address == public_key:
                         if len(block.validated_By) >= 3:

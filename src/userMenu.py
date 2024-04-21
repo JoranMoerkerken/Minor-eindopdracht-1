@@ -45,6 +45,11 @@ def transfer_coin(user):
     tx.add_input(user.publicKey, amount, fee)
     tx.add_output(receiver[4], amount)
     tx.sign(user.privateKey)
+    if not tx.verify():
+        print("the transaction was invalid, please try again.")
+        UserMenu(user)
+        return
+
 
     # Add transaction to the transaction pool
     transaction_pool = TransactionPool.TransactionPool()

@@ -78,7 +78,31 @@ def transfer_coin(balance, user):
     input("Press Enter to continue...")
     UserMenu(user)
 
+def change_password(user):
+    print(f"Greetings {user.username}. Inside this function, you can change your password!")
 
+    current_password = input("Enter your current password: ")
+
+    # Verify current password
+    if not GoodChain.verify_password(user.publicKey, current_password, user.password_hash):
+        print("Incorrect password.")
+        return
+
+    new_password = input("Enter your new password: ")
+    confirm_new_password = input("Confirm your new password: ")
+
+    # Check if the new passwords match
+    if new_password != confirm_new_password:
+        print("Passwords do not match.")
+        return
+
+    # Hash and save the new password
+    new_password_hash = GoodChain.hash_password(user.publicKey, new_password)
+    database.update_user_password(user.username, new_password_hash)
+    print("Password changed successfully!")
+
+    input("Press Enter to continue...")
+    UserMenu(user)
 
 def explore_blockchain(user):
     Blockchain.Blockchain().print_blockchain()
@@ -334,8 +358,12 @@ def newBlocks(user):
 
 def UserMenu(user):
 
-    options = ["Transfer coins", "Mine a block", "Explore the blockchain", "Explore your transaction history", "Explore the transactionpool","Search users", "Cancel a pending transaction", "logout"]
-    actions = [transfer_coin, mine_block, explore_blockchain, explore_transactions, check_pool, search_user, cancel_transaction, logout]
+    options = ["Transfer coins", "Mine a block", "Explore the blockchain", "Explore your transaction history",
+               "Explore the transactionpool", "Search users", "Cancel a pending transaction", "Change password",
+               "Logout"]
+    actions = [transfer_coin, mine_block, explore_blockchain, explore_transactions, check_pool, search_user,
+               cancel_transaction, change_password, logout]
+
     is_valid, new_blocks_count = newBlocks(user)
 
     if not is_valid:
@@ -361,15 +389,20 @@ def UserMenu(user):
     current_transactions_count = sum(len(block.transactions) for block in blockchain.chain)
 
     message = (
-        f"Welcome to Goodchain {user.username}!\n\n"
+        f"Welcome to Goodchain {user.username}!\n"
+        f"===============================================================================\n"
         f"Your confirmed balance = {confirmed_balance}\n"
         f"Your pending incoming balance = {pending_balance_incoming}\n"
         f"Your pending outgoing balance = {0 - pending_balance_outgoing}\n"
-        f"Your spendable balance = {actual_balance}\n\n"
-        f"Amount of new blocks since your last login: {new_blocks_count}\n\n"
-        f"Current amount of transactions in pool: {len(TransactionPool.TransactionPool().get_transactions())}\n"
+        f"Your spendable balance = {actual_balance}\n"
+        f"===============================================================================\n"
+        f"Amount of new blocks since your last login: {new_blocks_count}\n"
+        f"Current amount of valid transactions in pool: {len(TransactionPool.TransactionPool().get_transactions())}\n"
+        f"{'this means you are allowed to mine!\n' if len(TransactionPool.TransactionPool().get_transactions()) > 5 else ''}"
+        f"===============================================================================\n"
         f"Current amount of blocks in the chain: {len(blockchain.chain)}\n"
         f"Current amount of transactions in the chain: {current_transactions_count}\n"
+        f"===============================================================================\n"
     )
 
     index = menuMaker.select_menu_option(message, options)

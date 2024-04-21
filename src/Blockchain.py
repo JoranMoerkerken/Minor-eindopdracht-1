@@ -37,12 +37,12 @@ class Blockchain:
         total_fee = 0.0
 
         for tx in txs:
-            total_input = sum(amount for _, amount in tx.inputs)
-            total_output = sum(amount for _, amount in tx.outputs)
+            if tx.type == 'transaction':
+                total_input = sum(amount for _, amount in tx.inputs)
+                total_output = sum(amount for _, amount in tx.outputs)
 
-            fee = total_input - total_output
-            total_fee += fee
-
+                fee = total_input - total_output
+                total_fee += fee
         return total_fee
 
     def mine_block(self, transactions, user):
@@ -183,7 +183,10 @@ class Blockchain:
             if block.Creator[0] == database.get_username(public_key):
                 creator = True
             for tx in block.transactions:
-                fee = sum(amount for _, amount in tx.inputs) - sum(amount for _, amount in tx.outputs)
+                if tx.type == 'reward' or tx.type == 'minereward':
+                    fee = 0
+                else:
+                    fee = sum(amount for _, amount in tx.inputs) - sum(amount for _, amount in tx.outputs)
                 if len(block.validated_By) >= 3:
                     if creator:
                         confirmed_positive_balance += fee

@@ -121,10 +121,15 @@ class TransactionPool:
         Remove any transactions that fail verification.
         """
         valid_transactions = []
-
+        flag = True
         for tx in self.transactions:
             if tx.verify():
                 valid_transactions.append(tx)
+            else:
+                flag = False
+        self.transactions = valid_transactions
+        return flag
+
     def verify_pool_user(self, actual_balance, user_public_key):
         """
         Verify all transactions in the transaction pool.
@@ -134,39 +139,41 @@ class TransactionPool:
         - user_public_key (str): Public key of the user.
         - actual_balance (float): The actual balance of the user.
         """
-        valid_transactions = []
+        invalid_transactions = []
         flag = True
         # Sort transactions by their creation time
         sorted_transactions = sorted(self.transactions, key=lambda tx: tx.time)
 
         for tx in sorted_transactions:
-            if tx.verify():
-                 # Calculate potential new actual_balance after processing the transaction
-                new_actual_balance = actual_balance
+            if any(addr == user_public_key for addr, _ in tx.inputs):
+                if tx.verify():
+                     # Calculate potential new actual_balance after processing the transaction
+                    new_actual_balance = actual_balance
 
-                # Calculate the total input and output amounts relevant to the user for the transaction
-                total_input = sum(amount for addr, amount in tx.inputs if addr == user_public_key)
-                total_output = sum(amount for addr, amount in tx.outputs if addr == user_public_key)
+                    # Calculate the total input and output amounts relevant to the user for the transaction
+                    total_input = sum(amount for addr, amount in tx.inputs if addr == user_public_key)
+                    total_output = sum(amount for addr, amount in tx.outputs if addr == user_public_key)
 
-                # Check if the transaction is valid based on the actual_balance
-                if new_actual_balance - total_input + total_output >= 0:
-                    # If the transaction is valid, add it to the list of valid transactions
-                    valid_transactions.append(tx)
-                    # Update the new actual_balance
-                    new_actual_balance = new_actual_balance - total_input + total_output
+                    # Check if the transaction is valid based on the actual_balance
+                    if new_actual_balance - total_input + total_output >= 0:
+                        # If the transaction is valid, add it to the list of valid transactions
+                        # Update the new actual_balance
+                        new_actual_balance = new_actual_balance - total_input + total_output
+                    else:
+                        # If the transaction would make the actual_balance go below 0, skip it
+                        print(f"Transaction {tx.time} removed due to insufficient balance.")
+                        input("Press Enter to continue...")
+                        invalid_transactions.append(tx)
+                        flag = False
+                        continue
                 else:
-                    # If the transaction would make the actual_balance go below 0, skip it
-                    print(f"Transaction {tx.time} removed due to insufficient balance.")
+                    print(f"Transaction {tx.time} removed due to invalid signature.")
                     input("Press Enter to continue...")
+                    invalid_transactions.append(tx)
                     flag = False
-                    continue
-            else:
-                print(f"Transaction {tx.time} removed due to invalid signature.")
-                input("Press Enter to continue...")
-                flag = False
 
-        self.transactions = valid_transactions
-        self.save_to_file()
+        for tx in invalid_transactions:
+            self.remove_transaction(tx)
         return flag
 
 

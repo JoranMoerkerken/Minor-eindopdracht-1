@@ -32,17 +32,17 @@ def transfer_coin(balance, user):
         fee = float(input("Enter the mining fee, the higher it is the more likely it is a miner will pick it up. example inputs are 5 or 5.0:\n"))
     except ValueError:
         print("Invalid amount. Please enter a valid number.")
-        input("Press Enter to try agian...")
+        input("Press Enter to continue...")
         UserMenu(user)
         return
     if amount < 0 or fee < 0:
         print("Invalid amount. Please enter a valid number.")
-        input("Press Enter to try agian...")
+        input("Press Enter to continue...")
         UserMenu(user)
         return
     elif amount + fee > balance:
         print("You are trying to send more then you currently have. Please enter a valid number.")
-        input("Press Enter to try agian...")
+        input("Press Enter to continue...")
         UserMenu(user)
         return
 
@@ -55,21 +55,25 @@ def transfer_coin(balance, user):
     tx.sign(user.privateKey)
     if not tx.verify():
         print("the transaction was invalid, please try again.")
+        input("Press Enter to continue...")
         UserMenu(user)
         return
 
 
     # Add transaction to the transaction pool
     transaction_pool = TransactionPool.TransactionPool()
-    transaction_pool.add_transaction(tx)
     # here i check if the transactions of the user are valid with the balance the user has and i check if all transactions are valid
     if transaction_pool.verify_pool_user(balance, user.publicKey) and transaction_pool.verify_pool():
         pass
     else:
+        print(transaction_pool.verify_pool_user(balance, user.publicKey))
+        print(transaction_pool.verify_pool())
         print("an invalid transaction was found in the transactionpool, please try again.")
+        input("Press Enter to continue...")
         UserMenu(user)
         return
 
+    transaction_pool.add_transaction(tx)
     print(f"Ur transaction is now pending. {amount} coins to {selected_username}.")
     input("Press Enter to continue...")
     UserMenu(user)

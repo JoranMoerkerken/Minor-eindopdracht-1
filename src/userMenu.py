@@ -81,7 +81,7 @@ def explore_transactions(user):
         sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
         receiver = database.get_username(tx.outputs[0][0])
         amount = tx.outputs[0][1] if tx.outputs else 50
-        transaction_str = f"{i + 1}. {amount} to {receiver}"
+        transaction_str = f"{i + 1}. {amount} to {receiver} at {tx.time}"
         transaction_list_blockchain.append(transaction_str)
 
     # Display user's active transactions from transaction pool
@@ -90,7 +90,7 @@ def explore_transactions(user):
         sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
         receiver = database.get_username(tx.outputs[0][0])
         amount = tx.outputs[0][1] if tx.outputs else 50
-        transaction_str = f"{i + 1}. {amount} to {receiver}"
+        transaction_str = f"{i + 1}. {amount} to {receiver} at {tx.time}"
         transaction_list_pool.append(transaction_str)
 
     # Join transaction strings into separate lists
@@ -247,6 +247,17 @@ def newBlocks(user):
             elif user.username not in current_block.validated_By and user.username not in current_block.Creator:
                     current_block.validated_By.append(user.username)
                     newBlocks += 1
+                    # Check if the block has been validated three times
+                    if len(current_block.validated_By) == 3:
+                        # Add minereward to the mining pool
+                        tx_pool = TransactionPool.TransactionPool()
+                        minereward_tx = Transaction.Tx()
+                        creator = database.fetch_user_data(current_block.Creator[0])
+
+                        minereward_tx.add_output(creator[4], 50)
+                        minereward_tx.set_type('minereward')
+                        minereward_tx.verify()
+                        tx_pool.add_transaction(minereward_tx)
         else:
             previous_block = blockchain.chain[i - 1]
             ##########
@@ -273,7 +284,6 @@ def newBlocks(user):
                 # Check if the block has been validated three times
                 if len(current_block.validated_By) == 3:
                     # Add minereward to the mining pool
-                    print("test")
                     tx_pool = TransactionPool.TransactionPool()
                     minereward_tx = Transaction.Tx()
                     creator = database.fetch_user_data(current_block.Creator[0])
@@ -312,6 +322,7 @@ def UserMenu(user):
 
     message = (
         f"Welcome to Goodchain {user.username}!\n\n"
+        f"Your confirmed balance = {confirmed_balance}\n"
         f"Your pending incoming balance = {pending_balance_incoming}\n"
         f"Your pending outgoing balance = {0 - pending_balance_outgoing}\n"
         f"Your spendable balance = {actual_balance}\n\n"

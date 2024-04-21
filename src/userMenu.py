@@ -28,15 +28,15 @@ def transfer_coin(balance, user):
     # Input the amount to transfer
     try:
         print(f"your current balance is: ", balance)
-        amount = float(input("Enter the amount to transfer. example inputs are 5 or 5.0:\n"))
-        fee = float(input("Enter the mining fee, the higher it is the more likely it is a miner will pick it up. example inputs are 5 or 5.0:\n"))
+        amount = float(input("Enter the amount to transfer. example inputs are 5 or 5.2:\n"))
+        fee = float(input("Enter the mining fee, the higher it is the more likely it is a miner will pick it up. example inputs are 5 or 5.2:\n"))
     except ValueError:
-        print("Invalid amount. Please enter a valid number.")
+        print("Invalid input, your input must be a number. Please enter a valid number.")
         input("Press Enter to continue...")
         UserMenu(user)
         return
     if amount < 0 or fee < 0:
-        print("Invalid amount. Please enter a valid number.")
+        print("Your input must be higher then zero. Please enter a valid number.")
         input("Press Enter to continue...")
         UserMenu(user)
         return
@@ -129,7 +129,7 @@ def explore_transactions(user):
 
 def search_user(logged_in_user):
     print(f"Greetings {logged_in_user.username}. Inside this function, you can search for other members' public keys!\n"
-          f"You can also search your own name and look up your own public and private keys!")
+          f"You can also search your own name and look up your own public and private keys after using your password!")
 
     search_username = input("Enter the username to search for: ")
 
@@ -190,7 +190,6 @@ def cancel_transaction(user):
 
     transaction_list = []
     for i, tx in enumerate(user_transactions):
-        sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
         receiver = database.get_username(tx.outputs[0][0])
         amount = tx.outputs[0][1] if tx.outputs else 50
         transaction_str = f"{i + 1}. {amount} to {receiver}"

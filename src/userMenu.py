@@ -33,17 +33,17 @@ def transfer_coin(balance, user):
     except ValueError:
         print("Invalid amount. Please enter a valid number.")
         input("Press Enter to try agian...")
-        transfer_coin(user)
+        UserMenu(user)
         return
-    if amount < 0 or fee < 0 or amount > balance:
+    if amount < 0 or fee < 0:
         print("Invalid amount. Please enter a valid number.")
         input("Press Enter to try agian...")
-        transfer_coin(user)
+        UserMenu(user)
         return
     elif amount > balance:
         print("You are trying to send more then you currently have. Please enter a valid number.")
         input("Press Enter to try agian...")
-        transfer_coin(user)
+        UserMenu(user)
         return
 
     #to lazy to match selected username to users

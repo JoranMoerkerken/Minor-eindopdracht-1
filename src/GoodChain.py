@@ -144,29 +144,36 @@ def check_file_integrity():
         "../data/user_database.db"
     ]
 
+    hash_file_path = "../data/integrity.hash"
+
+    if os.path.exists(hash_file_path):
+        with open(hash_file_path, "r") as hash_file:
+            stored_hashes = {line.split(":")[0]: line.split(":")[1].strip() for line in hash_file.readlines()}
+    else:
+        stored_hashes = {}
+
     for file_path in files_to_check:
         if os.path.exists(file_path):
-            # Read the current hash from the hash file
-            hash_file_path = f"../data/{os.path.basename(file_path)}.hash"
+            # Calculate the hash of the file
+            current_hash = hashlib.sha256()
+            with open(file_path, "rb") as file:
+                for chunk in iter(lambda: file.read(4096), b""):
+                    current_hash.update(chunk)
 
-            if os.path.exists(hash_file_path):
-                with open(hash_file_path, "r") as hash_file:
-                    stored_hash = hash_file.read().strip()
+            current_hash_hex = current_hash.hexdigest()
 
-                # Calculate the hash of the file
-                current_hash = hashlib.sha256()
-                with open(file_path, "rb") as file:
-                    for chunk in iter(lambda: file.read(4096), b""):
-                        current_hash.update(chunk)
-
-                current_hash_hex = current_hash.hexdigest()
-
-                # Compare the hashes
-                if current_hash_hex == stored_hash:
+            # Compare the hashes
+            if file_path in stored_hashes:
+                if current_hash_hex == stored_hashes[file_path]:
                     pass
                 else:
                     print(f"Invalid data found in {file_path}.")
                     input("Press Enter to continue...")
+            else:
+                print(f"No hash found for {file_path}.")
+                input("Press Enter to continue...")
+        else:
+            pass
 
 def create_hashes():
     files_to_hash = [
@@ -174,6 +181,10 @@ def create_hashes():
         "../data/TransactionPool.dat",
         "../data/user_database.db"
     ]
+
+    hash_file_path = "../data/integrity.hash"
+
+    file_hashes = {}
 
     for file_path in files_to_hash:
         if os.path.exists(file_path):
@@ -185,10 +196,12 @@ def create_hashes():
 
             current_hash_hex = current_hash.hexdigest()
 
-            # Write the hash to the hash file
-            hash_file_path = f"../data/{os.path.basename(file_path)}.hash"
-            with open(hash_file_path, "w") as hash_file:
-                hash_file.write(current_hash_hex)
+            file_hashes[file_path] = current_hash_hex
+
+    # Write the hashes to the hash file
+    with open(hash_file_path, "w") as hash_file:
+        for file_path, file_hash in file_hashes.items():
+            hash_file.write(f"{file_path}:{file_hash}\n")
 
 
 def public_menu():

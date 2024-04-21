@@ -4,7 +4,8 @@ import Block
 import TransactionPool
 import GoodChain
 import time
-
+import userMenu
+import hashlib
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -18,6 +19,7 @@ class Blockchain:
 
     def mine_block(self, transactions, user):
         block = Block.Block(transactions, self.chain[-1].hash if self.chain else None, self.chain[-1].id + 1 if self.chain else 0, user)
+        print("Mining has started! Please wait...")
         correctTime = False
         mined_difficulties = []
         while not correctTime:
@@ -31,8 +33,6 @@ class Blockchain:
 
             block.mine_block(self.leading_zeroes, self.difficulty)
             elapsed_time = time.time() - startTime
-
-            print(f"Elapsed time: {elapsed_time}")
 
             if elapsed_time >= 10 and elapsed_time <= 20:
                 correctTime = True
@@ -57,6 +57,7 @@ class Blockchain:
 
             mined_difficulties.append(key)
         self.add_block(block)
+        userMenu.UserMenu(user)
 
     def is_valid(self):
         for i in range(len(self.chain)):
@@ -115,14 +116,20 @@ class Blockchain:
 
         # Select 'minereward' transactions first
         selected_txs.extend(minereward_txs[:min(1, len(minereward_txs))])
+        for tx in minereward_txs[:min(1, len(minereward_txs))]:
+            tx_pool.remove_transaction(tx)
 
         # If we still need more transactions, select 'reward' transactions
         if len(selected_txs) < 10:
             selected_txs.extend(reward_txs[:min(9 - len(selected_txs), len(reward_txs))])
+            for tx in reward_txs[:min(9 - len(selected_txs), len(reward_txs))]:
+                tx_pool.remove_transaction(tx)
 
         # If we still need more transactions, select 'regular' transactions
         if len(selected_txs) < 10:
             selected_txs.extend(regular_txs[:min(10 - len(selected_txs), len(regular_txs))])
+            for tx in regular_txs[:min(10 - len(selected_txs), len(regular_txs))]:
+                tx_pool.remove_transaction(tx)
 
         return selected_txs[:10]  # Return at most 10 transactions
 
@@ -159,6 +166,8 @@ class Blockchain:
 
         return confirmed_positive_balance, pending_positive_balance, pending_negative_balance
 
+    import hashlib
+
     def print_blockchain(self):
         if len(self.chain) == 0:
             print("The Chain is empty")
@@ -168,9 +177,10 @@ class Blockchain:
                 print("╔═══════════════════════════════════════════╗")
                 print(f"║ Block {block.id}:")
                 print(f"║ Timestamp: {block.timestamp}")
-                print(f"║ Previous Hash: {block.previous_hash}")
+                print(
+                    f"║ Previous Hash: {hashlib.sha256(block.previous_hash).hexdigest() if block.previous_hash else 'Genesis Block'}")
                 print(f"║ Nonce: {block.nonce}")
-                print(f"║ Hash: {block.hash}")
+                print(f"║ Hash: {hashlib.sha256(block.hash).hexdigest()}")
                 print(f"║ Amount of transactions: {len(block.transactions)}")
                 print(f"║ Amount of people who validated: {len(block.validated_By)}")
                 print(f"║ Amount of people who marked this block invalid: {len(block.invalidated_by)}")
@@ -178,3 +188,5 @@ class Blockchain:
                 print("╚═══════════════════════════════════════════╝")
                 print("")
             input("Press Enter to continue...")
+
+

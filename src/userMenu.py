@@ -66,29 +66,46 @@ def explore_blockchain(user):
     UserMenu(user)
 
 def explore_transactions(user):
-    # Retrieve transactions related to the specified user from the transaction pool
+    blockchain = Blockchain.Blockchain()
     transaction_pool = TransactionPool.TransactionPool()
-    user_transactions = [tx for tx in transaction_pool.get_transactions() if tx.inputs and tx.inputs[0][0] == user.publicKey]
 
-    if not user_transactions:
-        print("No transactions found.")
-        UserMenu(user)
-        return
+    # Retrieve transactions related to the specified user from the blockchain
+    user_transactions_blockchain = [tx for block in blockchain.chain for tx in block.transactions if tx.inputs and tx.inputs[0][0] == user.publicKey]
 
-    # Display user's active transactions
-    transaction_list = []
-    for i, tx in enumerate(user_transactions):
+    # Retrieve transactions related to the specified user from the transaction pool
+    user_transactions_pool = [tx for tx in transaction_pool.get_transactions() if tx.inputs and tx.inputs[0][0] == user.publicKey]
+
+    # Display user's active transactions from blockchain
+    transaction_list_blockchain = []
+    for i, tx in enumerate(user_transactions_blockchain):
         sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
         receiver = database.get_username(tx.outputs[0][0])
         amount = tx.outputs[0][1] if tx.outputs else 50
         transaction_str = f"{i + 1}. {amount} to {receiver}"
-        transaction_list.append(transaction_str)
+        transaction_list_blockchain.append(transaction_str)
 
-    # Join transaction strings into a single list
-    transaction_output = "\n".join(transaction_list)
-    print(transaction_output)
+    # Display user's active transactions from transaction pool
+    transaction_list_pool = []
+    for i, tx in enumerate(user_transactions_pool):
+        sender = 'system' if not tx.inputs else database.get_username(tx.inputs[0][0])
+        receiver = database.get_username(tx.outputs[0][0])
+        amount = tx.outputs[0][1] if tx.outputs else 50
+        transaction_str = f"{i + 1}. {amount} to {receiver}"
+        transaction_list_pool.append(transaction_str)
+
+    # Join transaction strings into separate lists
+    transaction_output_blockchain = "\n".join(transaction_list_blockchain)
+    transaction_output_pool = "\n".join(transaction_list_pool)
+
+    print("Transactions in blockchain:")
+    print(transaction_output_blockchain)
+
+    print("\nTransactions still in pool:")
+    print(transaction_output_pool)
+
     input("Press Enter to continue...")
     UserMenu(user)
+
 
 
 def search_user(logged_in_user):
@@ -192,11 +209,12 @@ def mine_block(user):
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
     tx_pool.verify_pool()
-    transactions_count = len(tx_pool.get_transactions())
+    transactions = blockchain.select_transactions()
+    transactions_count = len(transactions)
 
     if time_difference > 180:
         if transactions_count >= 5:
-            # Perform mining
+            blockchain.mine_block(transactions, user)
             pass
         else:
             print(f"There should be at least 5 verified transactions in the pool. Current count: {transactions_count}.")

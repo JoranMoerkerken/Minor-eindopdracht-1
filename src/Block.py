@@ -27,7 +27,6 @@ class Block:
         return digest.finalize()
 
     def mine_block(self, leading_zeroes, difficulty):
-        print("Mining Block using the following difficulties. leading_zeroes: " + str(leading_zeroes), "difficulty: " + str(difficulty))
         starttime = time.time()
         elapsedTime = 0
         elapsedNonse= 0
@@ -44,11 +43,9 @@ class Block:
                         leading_zeroes -= 1
             if difficulty == 0:
                 if self.hash[:leading_zeroes] == bytes('0' * leading_zeroes, 'utf8'):
-                    print(self.hash, "final hash")
                     return
             else:
                 if self.hash[:leading_zeroes] == bytes('0' * leading_zeroes, 'utf8') and int(self.hash[leading_zeroes]) > difficulty:
-                    print(self.hash, "final hash ")
                     return
             elapsedTime = time.time() - starttime
 

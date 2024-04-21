@@ -192,7 +192,7 @@ def cancel_transaction(user):
     print("Transaction cancelled successfully!")
     UserMenu(user)
 
-def mine_block(user):
+def mine_block(balance, user):
     blockchain = Blockchain.Blockchain()
 
     # Check if the blockchain has at least one block
@@ -210,7 +210,7 @@ def mine_block(user):
 
     # Check if there are at least 5 verified transactions in the pool
     tx_pool = TransactionPool.TransactionPool()
-    tx_pool.verify_pool()
+    tx_pool.verify_pool(balance, user.publicKey)
     transactions_count = len(tx_pool.get_transactions())
 
     if time_difference > 180:
@@ -237,6 +237,7 @@ def logout(user):
 
 def newBlocks(user):
     blockchain = Blockchain.Blockchain()
+
     newBlocks = 0
     for i in range(len(blockchain.chain)):
         current_block = blockchain.chain[i]
@@ -317,6 +318,9 @@ def UserMenu(user):
     pending_balance_incoming = pending_incoming_chain + pending_incoming
     actual_balance = confirmed_balance - pending_balance_outgoing
 
+    pool = TransactionPool.TransactionPool()
+    pool.verify_pool(actual_balance, user.publicKey)
+
     # Get the current number of transactions in the blockchain chain
     current_transactions_count = sum(len(block.transactions) for block in blockchain.chain)
 
@@ -333,6 +337,7 @@ def UserMenu(user):
     )
 
     index = menuMaker.select_menu_option(message, options)
-
+    if index == 1:
+        actions[index](actual_balance, user)
     actions[index](user)
 

@@ -115,17 +115,42 @@ class TransactionPool:
 
         return positive_balance, negative_balance
 
-    def verify_pool(self):
+    def verify_pool(self, actual_balance, user_public_key):
         """
         Verify all transactions in the transaction pool.
-        Remove any transactions that fail verification.
+        Remove any transactions that fail verification or would make the actual_balance go below 0.
+
+        Args:
+        - user_public_key (str): Public key of the user.
+        - actual_balance (float): The actual balance of the user.
         """
         valid_transactions = []
 
-        for tx in self.transactions:
+        # Sort transactions by their creation time
+        sorted_transactions = sorted(self.transactions, key=lambda tx: tx.time)
+
+        for tx in sorted_transactions:
             if tx.verify():
-                valid_transactions.append(tx)
+                 # Calculate potential new actual_balance after processing the transaction
+                new_actual_balance = actual_balance
+
+                # Calculate the total input and output amounts relevant to the user for the transaction
+                total_input = sum(amount for addr, amount in tx.inputs if addr == user_public_key)
+                total_output = sum(amount for addr, amount in tx.outputs if addr == user_public_key)
+
+                # Check if the transaction is valid based on the actual_balance
+                if new_actual_balance - total_input + total_output >= 0:
+                    # If the transaction is valid, add it to the list of valid transactions
+                    valid_transactions.append(tx)
+                    # Update the new actual_balance
+                    new_actual_balance = new_actual_balance - total_input + total_output
+                else:
+                    # If the transaction would make the actual_balance go below 0, skip it
+                    print(f"Transaction {tx.time} removed due to insufficient balance.")
+                    input("Press Enter to continue...")
+                    continue
 
         self.transactions = valid_transactions
         self.save_to_file()
+
 
